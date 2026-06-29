@@ -51,11 +51,12 @@ export default function AISettingsControl({ onChange, className = "" }: AISettin
       {/* Settings Toggle Trigger Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-cyber-border bg-cyber-dark/85 text-xs text-slate-300 hover:text-white hover:border-cyber-teal-light transition duration-150"
+        className="flex items-center gap-2 px-3 py-2 min-h-11 rounded-lg border border-cyber-border bg-cyber-dark/85 text-xs text-slate-300 hover:text-white hover:border-cyber-teal-light transition duration-150"
         title="AI Engine Parameters"
       >
         <Settings className={`w-3.5 h-3.5 text-cyber-teal-light ${isOpen ? "rotate-90" : ""} transition-transform duration-300`} />
-        <span className="font-mono">Engine: <span className="text-cyber-teal-light uppercase font-bold">GROQ</span> ({model.split('-').slice(0, 2).join('-')})</span>
+        <span className="font-mono hidden sm:inline">Engine: <span className="text-cyber-teal-light uppercase font-bold">GROQ</span> ({model.split('-').slice(0, 2).join('-')})</span>
+        <span className="font-mono sm:hidden text-cyber-teal-light uppercase font-bold">GROQ</span>
       </button>
 
       {/* Settings Dropdown Card */}
@@ -64,7 +65,7 @@ export default function AISettingsControl({ onChange, className = "" }: AISettin
           {/* Invisible clickaway backdrop */}
           <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
           
-          <div className="absolute right-0 mt-2 w-72 bg-cyber-card border border-cyber-border rounded-xl shadow-2xl p-4 z-50 animate-fade-in space-y-4">
+          <div className="absolute right-0 mt-2 w-[min(18rem,calc(100vw-2rem))] bg-cyber-card border border-cyber-border rounded-xl shadow-2xl p-4 z-50 animate-fade-in space-y-4">
             <div className="flex items-center justify-between border-b border-cyber-border pb-2.5">
               <span className="font-display font-semibold text-xs text-white uppercase tracking-wider flex items-center gap-1.5">
                 <Cpu className="w-3.5 h-3.5 text-cyber-teal-light" />
@@ -90,7 +91,7 @@ export default function AISettingsControl({ onChange, className = "" }: AISettin
                   <button
                     key={m.id}
                     onClick={() => handleModelChange(m.id)}
-                    className={`w-full px-3 py-2 rounded-lg border text-xs text-left transition-all flex items-center justify-between ${
+                    className={`w-full px-3 py-3 min-h-11 rounded-lg border text-xs text-left transition-all flex items-center justify-between ${
                       model === m.id
                         ? "bg-cyber-navy/80 border-cyber-teal-light text-cyber-teal-light font-medium"
                         : "bg-cyber-dark border-cyber-border text-slate-400 hover:bg-cyber-navy/20 hover:text-slate-200"

@@ -236,7 +236,7 @@ function HeroGeometric({
             ref={containerRef}
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
-            className="relative min-h-screen w-full flex items-center justify-center overflow-hidden bg-[#030303] border-b border-cyber-border select-none"
+            className="relative min-h-screen w-full flex items-center justify-center overflow-x-hidden bg-[#030303] border-b border-cyber-border select-none"
         >
             {/* Ambient Background Aura */}
             <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/[0.1] via-transparent to-rose-500/[0.1] blur-3xl pointer-events-none" />
@@ -301,7 +301,7 @@ function HeroGeometric({
                 />
             </div>
 
-            <div className="relative z-10 container mx-auto px-4 md:px-6 py-16">
+            <div className="relative z-10 container mx-auto px-4 sm:px-6 py-12 sm:py-16">
                 <div className="max-w-4xl mx-auto text-center">
                     <motion.div
                         custom={0}

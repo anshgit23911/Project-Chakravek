@@ -390,18 +390,18 @@ export default function AuditReportPage() {
   };
 
   return (
-    <div className="p-8 select-none flex-1 relative min-h-screen bg-[#030303] text-slate-100 overflow-hidden">
+    <div className="p-4 sm:p-6 lg:p-8 select-none flex-1 relative min-h-screen bg-[#030303] text-slate-100 overflow-x-hidden">
       {/* Background ambient glowing shapes */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-gradient-to-br from-cyber-teal/20 via-cyber-cyan/15 to-transparent blur-[120px] rounded-full pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-gradient-to-tr from-cyber-rose/20 via-cyber-violet/15 to-transparent blur-[100px] rounded-full pointer-events-none" />
 
       <div className="relative z-10 space-y-8">
         {/* SECTION HEADER */}
-        <div className="pb-6 border-b border-cyber-border flex items-center justify-between">
-        <div>
-          <h1 className="font-display font-medium text-2xl text-white flex items-center gap-2.5">
-            <FileText className="w-6 h-6 text-cyber-teal-light" />
-            <span>Forensic Audit Report Builder</span>
+        <div className="pb-6 border-b border-cyber-border flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="min-w-0">
+          <h1 className="font-display font-medium text-lg sm:text-2xl text-white flex items-center gap-2.5">
+            <FileText className="w-5 h-5 sm:w-6 sm:h-6 text-cyber-teal-light shrink-0" />
+            <span className="truncate">Forensic Audit Report Builder</span>
           </h1>
           <p className="text-slate-450 text-xs mt-1">Acquire and compile state-vetted defense procurement files into highly formal GFR Audit Report drafts.</p>
         </div>
@@ -476,9 +476,9 @@ export default function AuditReportPage() {
         </div>
 
         {/* WORK DOC PREVIEW (8 Columns) */}
-        <div className="lg:col-span-8 bg-cyber-card border border-cyber-border rounded-xl flex flex-col justify-between overflow-hidden min-h-[500px]">
+        <div className="lg:col-span-8 bg-cyber-card border border-cyber-border rounded-xl flex flex-col justify-between overflow-hidden min-h-[320px] sm:min-h-[500px]">
           {/* Work doc sheet body */}
-          <div className="p-6 md:p-8 flex-1 bg-cyber-dark/40 overflow-y-auto max-h-[600px]">
+          <div className="p-4 sm:p-6 md:p-8 flex-1 bg-cyber-dark/40 overflow-y-auto max-h-[50vh] sm:max-h-[600px]">
             {currentReport ? (
               <div className="prose prose-invert max-w-none text-slate-300 font-sans text-xs leading-relaxed space-y-4">
                 {/* Formal header stamp */}
@@ -513,12 +513,12 @@ export default function AuditReportPage() {
 
           {/* Export bar footer */}
           {currentReport && (
-            <div className="p-4 bg-cyber-dark/80 border-t border-cyber-border flex items-center justify-between">
+            <div className="p-4 bg-cyber-dark/80 border-t border-cyber-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <span className="text-[10px] font-mono text-slate-500">Document status: <strong>Draft Vetted (Finalized)</strong></span>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <button
                   onClick={handleCopy}
-                  className="px-3.5 py-1.5 bg-cyber-card hover:bg-cyber-card-hover border border-cyber-border text-slate-300 hover:text-white rounded-lg text-xs font-mono font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                  className="px-3.5 py-2.5 min-h-11 bg-cyber-card hover:bg-cyber-card-hover border border-cyber-border text-slate-300 hover:text-white rounded-lg text-xs font-mono font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
                 >
                   {copied ? (
                     <>
@@ -534,14 +534,14 @@ export default function AuditReportPage() {
                 </button>
                 <button
                   onClick={() => triggerExport('PDF')}
-                  className="px-3.5 py-1.5 bg-cyber-card hover:bg-cyber-card-hover border border-cyber-border text-slate-300 hover:text-white rounded-lg text-xs font-mono font-semibold flex items-center gap-1.5 transition-colors"
+                  className="px-3.5 py-2.5 min-h-11 bg-cyber-card hover:bg-cyber-card-hover border border-cyber-border text-slate-300 hover:text-white rounded-lg text-xs font-mono font-semibold flex items-center gap-1.5 transition-colors"
                 >
                   <Download className="w-3.5 h-3.5 text-cyber-teal-light" />
                   <span>Download .PDF</span>
                 </button>
                 <button
                   onClick={() => triggerExport('DOCX')}
-                  className="px-3.5 py-1.5 bg-cyber-card hover:bg-cyber-card-hover border border-cyber-border text-slate-300 hover:text-white rounded-lg text-xs font-mono font-semibold flex items-center gap-1.5 transition-colors"
+                  className="px-3.5 py-2.5 min-h-11 bg-cyber-card hover:bg-cyber-card-hover border border-cyber-border text-slate-300 hover:text-white rounded-lg text-xs font-mono font-semibold flex items-center gap-1.5 transition-colors"
                 >
                   <Download className="w-3.5 h-3.5 text-cyber-teal-light" />
                   <span>Download .DOCX</span>

@@ -52,14 +52,14 @@ export default function SignUpPage({ onSignUpSuccess }: SignUpPageProps) {
 
   return (
     <SilkBackground>
-      <div className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative">
+      <div className="min-h-screen flex flex-col justify-center py-10 sm:py-12 sm:px-6 lg:px-8 relative px-4">
         <div className="sm:mx-auto sm:w-full sm:max-w-md relative z-10">
         <div className="flex justify-center text-center">
           <div className="p-2.5 bg-cyber-card rounded-lg border border-cyber-border shadow-sm">
             <ShieldAlert className="w-6 h-6 text-cyber-teal-light" />
           </div>
         </div>
-        <h2 className="mt-4 text-center font-display font-medium text-2xl tracking-normal text-white">
+        <h2 className="mt-4 text-center font-display font-medium text-xl sm:text-2xl tracking-normal text-white">
           Request Node Authorization
         </h2>
         <p className="mt-1.5 text-center text-[10px] text-slate-400 font-mono tracking-wider">
@@ -68,7 +68,7 @@ export default function SignUpPage({ onSignUpSuccess }: SignUpPageProps) {
       </div>
 
       <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-lg relative z-10 px-4">
-        <div className="bg-cyber-card border border-cyber-border py-8 px-8 shadow-2xl rounded-2xl">
+        <div className="bg-cyber-card border border-cyber-border py-6 sm:py-8 px-5 sm:px-8 shadow-2xl rounded-2xl">
           {error && (
             <div className="mb-4 p-3 rounded-lg bg-red-950/40 border border-red-500/30 text-xs text-red-300 font-sans">
               ⚠️ {error}
@@ -92,7 +92,7 @@ export default function SignUpPage({ onSignUpSuccess }: SignUpPageProps) {
                     placeholder="S. K. Sharma"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="block w-full pl-10 pr-4 py-2.5 bg-cyber-dark/85 border border-cyber-border rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-cyber-teal focus:border-cyber-teal-light transition-all"
+                    className="block w-full pl-10 pr-4 py-3 min-h-11 bg-cyber-dark/85 border border-cyber-border rounded-lg text-base sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-cyber-teal focus:border-cyber-teal-light transition-all"
                   />
                 </div>
               </div>
@@ -112,7 +112,7 @@ export default function SignUpPage({ onSignUpSuccess }: SignUpPageProps) {
                     placeholder="CAG Defence Wing IX"
                     value={organization}
                     onChange={(e) => setOrganization(e.target.value)}
-                    className="block w-full pl-10 pr-4 py-2.5 bg-cyber-dark/85 border border-cyber-border rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-cyber-teal focus:border-cyber-teal-light transition-all"
+                    className="block w-full pl-10 pr-4 py-3 min-h-11 bg-cyber-dark/85 border border-cyber-border rounded-lg text-base sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-cyber-teal focus:border-cyber-teal-light transition-all"
                   />
                 </div>
               </div>
@@ -134,7 +134,7 @@ export default function SignUpPage({ onSignUpSuccess }: SignUpPageProps) {
                     placeholder="officer@nic.in"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="block w-full pl-10 pr-4 py-2.5 bg-cyber-dark/85 border border-cyber-border rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-cyber-teal focus:border-cyber-teal-light transition-all"
+                    className="block w-full pl-10 pr-4 py-3 min-h-11 bg-cyber-dark/85 border border-cyber-border rounded-lg text-base sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-cyber-teal focus:border-cyber-teal-light transition-all"
                   />
                 </div>
               </div>
@@ -151,7 +151,7 @@ export default function SignUpPage({ onSignUpSuccess }: SignUpPageProps) {
                     id="role"
                     value={role}
                     onChange={(e) => setRole(e.target.value)}
-                    className="block w-full pl-10 pr-4 py-2.5 bg-cyber-dark/85 border border-cyber-border rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-cyber-teal focus:border-cyber-teal-light transition-all"
+                    className="block w-full pl-10 pr-4 py-3 min-h-11 bg-cyber-dark/85 border border-cyber-border rounded-lg text-base sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-cyber-teal focus:border-cyber-teal-light transition-all"
                   >
                     <option value="Auditor">Official Auditor</option>
                     <option value="Caudit">Defence Vetting Coordinator</option>
@@ -177,7 +177,7 @@ export default function SignUpPage({ onSignUpSuccess }: SignUpPageProps) {
                     placeholder="••••••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="block w-full pl-10 pr-4 py-2.5 bg-cyber-dark/85 border border-cyber-border rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-cyber-teal focus:border-cyber-teal-light transition-all"
+                    className="block w-full pl-10 pr-4 py-3 min-h-11 bg-cyber-dark/85 border border-cyber-border rounded-lg text-base sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-cyber-teal focus:border-cyber-teal-light transition-all"
                   />
                 </div>
               </div>
@@ -197,7 +197,7 @@ export default function SignUpPage({ onSignUpSuccess }: SignUpPageProps) {
                     placeholder="••••••••••••"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="block w-full pl-10 pr-4 py-2.5 bg-cyber-dark/85 border border-cyber-border rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-cyber-teal focus:border-cyber-teal-light transition-all"
+                    className="block w-full pl-10 pr-4 py-3 min-h-11 bg-cyber-dark/85 border border-cyber-border rounded-lg text-base sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-cyber-teal focus:border-cyber-teal-light transition-all"
                   />
                 </div>
               </div>
@@ -207,7 +207,7 @@ export default function SignUpPage({ onSignUpSuccess }: SignUpPageProps) {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-cyber-teal hover:bg-cyber-teal-light text-white font-medium py-2.5 px-4 rounded-lg border border-cyber-teal-light/10 transition-colors flex items-center justify-center gap-2 text-sm cursor-pointer"
+                className="w-full bg-cyber-teal hover:bg-cyber-teal-light text-white font-medium py-3 min-h-11 px-4 rounded-lg border border-cyber-teal-light/10 transition-colors flex items-center justify-center gap-2 text-sm cursor-pointer"
               >
                 {loading ? (
                   <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>

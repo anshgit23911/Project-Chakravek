@@ -35,13 +35,13 @@ export default function InfoPage() {
   };
 
   return (
-    <div className="bg-[#030303] text-slate-100 min-h-screen relative select-none">
+    <div className="bg-[#030303] text-slate-100 min-h-screen relative select-none overflow-x-hidden">
       {/* Background radial effects */}
       <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-gradient-to-br from-cyber-teal/20 via-cyber-cyan/15 to-transparent blur-[120px] rounded-full pointer-events-none" />
       <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-gradient-to-tl from-cyber-rose/20 via-cyber-violet/15 to-transparent blur-[120px] rounded-full pointer-events-none" />
 
       {/* HEADER BAR */}
-      <header className="sticky top-0 z-40 border-b border-white/[0.06] bg-[#030303]/80 backdrop-blur-xl px-8 py-4 flex items-center justify-between">
+      <header className="sticky top-0 z-40 border-b border-white/[0.06] bg-[#030303]/80 backdrop-blur-xl px-4 sm:px-6 lg:px-8 py-3 sm:py-4 flex items-center justify-between gap-3">
         <Link to="/" className="flex items-center gap-3 group">
           <div className="p-2 bg-white/[0.03] rounded-xl border border-white/[0.08] shadow-[0_8px_32px_rgba(0,0,0,0.5)] group-hover:border-cyber-teal/30 transition-colors">
             <ArrowLeft className="w-4 h-4 text-slate-300 group-hover:text-white transition-colors" />
@@ -55,14 +55,14 @@ export default function InfoPage() {
         </Link>
 
         <div className="flex items-center gap-4">
-          <span className="px-3 py-1 rounded-md bg-cyber-teal/10 border border-cyber-teal/20 text-[10px] font-mono text-cyber-teal-light uppercase tracking-widest">
+          <span className="hidden sm:inline px-3 py-1 rounded-md bg-cyber-teal/10 border border-cyber-teal/20 text-[10px] font-mono text-cyber-teal-light uppercase tracking-widest">
             OFFICIAL INFORMATION PORTAL
           </span>
         </div>
       </header>
 
       {/* MAIN LAYOUT */}
-      <div className="max-w-6xl mx-auto px-6 py-12 lg:py-16">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12 lg:py-16">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
           
           {/* SIDEBAR NAVIGATION (4 columns on large screens) */}

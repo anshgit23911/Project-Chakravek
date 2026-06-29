@@ -76,7 +76,7 @@ export default function RiskAnalyticsPage() {
   }));
 
   return (
-    <div className="p-8 select-none relative min-h-screen bg-[#030303] text-slate-100 overflow-hidden">
+    <div className="p-4 sm:p-6 lg:p-8 select-none relative min-h-screen bg-[#030303] text-slate-100 overflow-x-hidden">
       {/* Background ambient glowing shapes */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-gradient-to-br from-cyber-teal/20 via-cyber-cyan/15 to-transparent blur-[120px] rounded-full pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-gradient-to-tr from-cyber-rose/20 via-cyber-violet/15 to-transparent blur-[100px] rounded-full pointer-events-none" />
@@ -85,7 +85,7 @@ export default function RiskAnalyticsPage() {
         {/* HEADER SECTION */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-6 border-b border-cyber-border">
         <div>
-          <h1 className="font-display font-medium text-2xl tracking-normal text-white">Forensic Risk Analytics</h1>
+          <h1 className="font-display font-medium text-xl sm:text-2xl tracking-normal text-white">Forensic Risk Analytics</h1>
           <p className="text-slate-450 text-xs font-sans mt-0.5">Custom analysis dashboards for cross-checking procurement trends and tender anomalies.</p>
         </div>
         <button 
@@ -156,7 +156,7 @@ export default function RiskAnalyticsPage() {
             <span className="text-[10px] font-mono text-cyber-teal-light">Graphed: {filteredContracts.length} records</span>
           </div>
 
-          <div className="h-80 w-full">
+          <div className="h-56 sm:h-80 w-full min-w-0">
             {comparisonData.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={comparisonData}>
@@ -184,7 +184,7 @@ export default function RiskAnalyticsPage() {
         <div className="lg:col-span-5 p-6 bg-cyber-card border border-cyber-border rounded-xl">
           <h3 className="font-display font-medium text-sm text-white uppercase tracking-wider mb-6">Pricing vs Anomaly Correlation Matrix</h3>
 
-          <div className="h-80 w-full">
+          <div className="h-56 sm:h-80 w-full min-w-0">
             {scatterData.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
                 <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 10 }}>

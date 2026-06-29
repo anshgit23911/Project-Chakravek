@@ -29,14 +29,18 @@ function AppContent({
   const isLandingPage = location.pathname === "/";
 
   return (
-    <div className="flex h-screen overflow-hidden bg-cyber-bg text-slate-100 font-sans">
+    <div className="flex h-dvh overflow-hidden bg-cyber-bg text-slate-100 font-sans">
       {/* Render application sidebar only if user exists and is not on the landing page */}
       {currentUser && !isLandingPage && (
         <Navigation user={currentUser} onLogout={handleLogout} />
       )}
 
       {/* Core content viewframe */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-y-auto">
+      <div
+        className={`flex-1 flex flex-col min-w-0 overflow-y-auto overflow-x-hidden ${
+          currentUser && !isLandingPage ? "pt-14 lg:pt-0" : ""
+        }`}
+      >
         {/* Render public header if not logged in OR if logged in but on the landing page */}
         {(!currentUser || isLandingPage) && (
           <Navigation user={currentUser} onLogout={handleLogout} forcePublicHeader={isLandingPage} />

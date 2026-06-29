@@ -109,18 +109,18 @@ ${currentObs.recommendation}
   );
 
   return (
-    <div className="p-8 select-none flex-1 relative min-h-screen bg-[#030303] text-slate-100 overflow-hidden">
+    <div className="p-4 sm:p-6 lg:p-8 select-none flex-1 relative min-h-screen bg-[#030303] text-slate-100 overflow-x-hidden">
       {/* Background ambient glowing shapes */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-gradient-to-br from-cyber-teal/20 via-cyber-cyan/15 to-transparent blur-[120px] rounded-full pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-gradient-to-tr from-cyber-rose/20 via-cyber-violet/15 to-transparent blur-[100px] rounded-full pointer-events-none" />
 
       <div className="relative z-10 space-y-8">
         {/* SECTION HEADER */}
-        <div className="pb-6 border-b border-cyber-border flex items-center justify-between">
-        <div>
-          <h1 className="font-display font-medium text-2xl text-white flex items-center gap-2.5">
-            <HelpCircle className="w-6 h-6 text-cyber-teal-light" />
-            <span>CAG Audit Inquiry Assistant</span>
+        <div className="pb-6 border-b border-cyber-border flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="min-w-0">
+          <h1 className="font-display font-medium text-lg sm:text-2xl text-white flex items-center gap-2.5">
+            <HelpCircle className="w-5 h-5 sm:w-6 sm:h-6 text-cyber-teal-light shrink-0" />
+            <span className="truncate">CAG Audit Inquiry Assistant</span>
           </h1>
           <p className="text-slate-400 text-xs mt-1">Specialized CAG observation composer. Instantly output GFR-aligned legal and constitutional language.</p>
         </div>
@@ -208,16 +208,16 @@ ${currentObs.recommendation}
         </div>
 
         {/* COMPILER OUTPUT BOARD (7 Columns) */}
-        <div className="lg:col-span-7 bg-cyber-card border border-cyber-border rounded-xl p-6 flex flex-col justify-between min-h-[450px]">
+        <div className="lg:col-span-7 bg-cyber-card border border-cyber-border rounded-xl p-4 sm:p-6 flex flex-col justify-between min-h-[320px] sm:min-h-[450px]">
           {currentObs ? (
             <div className="space-y-6">
               {/* Draft Stamp */}
-              <div className="p-3.5 bg-cyber-dark border border-cyber-border rounded-xl flex items-center justify-between">
-                <div>
+              <div className="p-3.5 bg-cyber-dark border border-cyber-border rounded-xl flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div className="min-w-0">
                   <h5 className="text-[10px] uppercase font-bold text-cyber-gold font-mono tracking-widest">CAG COMPOSER ACTIVE DIRECTIVE</h5>
-                  <p className="text-xs font-semibold text-white mt-1">{currentObs.formalTitle}</p>
+                  <p className="text-xs font-semibold text-white mt-1 break-words">{currentObs.formalTitle}</p>
                 </div>
-                <div className="flex items-center gap-2 shrink-0">
+                <div className="flex items-center gap-2 shrink-0 flex-wrap">
                   <button
                     onClick={handleCopy}
                     className="px-2.5 py-1.5 bg-cyber-card hover:bg-cyber-card-hover border border-cyber-border text-slate-300 hover:text-white rounded-lg text-xs font-mono font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"

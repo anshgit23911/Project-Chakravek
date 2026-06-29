@@ -64,7 +64,7 @@ export default function DashboardPage() {
   const COLORS = ["#06b6d4", "#10b981", "#8b5cf6", "#f59e0b", "#f43f5e", "#f97316"];
 
   return (
-    <div className="p-8 space-y-8 select-none relative min-h-screen bg-[#030303] text-slate-100 overflow-hidden">
+    <div className="p-4 sm:p-6 lg:p-8 space-y-6 sm:space-y-8 select-none relative min-h-screen bg-[#030303] text-slate-100 overflow-x-hidden">
       {/* Background ambient glowing shapes mimicking shape-landing-hero */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-gradient-to-br from-cyber-teal/20 via-cyber-cyan/15 to-transparent blur-[120px] rounded-full pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-gradient-to-tr from-cyber-rose/20 via-cyber-violet/15 to-transparent blur-[100px] rounded-full pointer-events-none" />
@@ -72,7 +72,7 @@ export default function DashboardPage() {
       {/* EXECUTIVE SUMMARY BANNER */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-6 border-b border-white/[0.06] relative z-10">
         <div>
-          <h1 className="font-display font-semibold text-2xl tracking-tight text-white">Procurement Intelligence Base</h1>
+          <h1 className="font-display font-semibold text-xl sm:text-2xl tracking-tight text-white">Procurement Intelligence Base</h1>
           <p className="text-slate-450 text-xs mt-1">Real-time Comptroller & Auditor General (CAG) compliance monitoring dashboard.</p>
         </div>
         <div className="flex items-center gap-2.5 font-mono text-xs text-cyber-teal-light px-4 py-2 bg-cyber-teal/10 border border-cyber-teal/20 rounded-xl">
@@ -91,7 +91,7 @@ export default function DashboardPage() {
               <FileCheck2 className="w-4 h-4" />
             </div>
           </div>
-          <p className="font-display font-bold text-3xl text-white mt-1">{stats ? stats.totalContractsCount : 0}</p>
+          <p className="font-display font-bold text-2xl sm:text-3xl text-white mt-1">{stats ? stats.totalContractsCount : 0}</p>
           <div className="text-[10px] text-slate-500 font-mono mt-3">Active military acquisitions</div>
         </div>
 
@@ -104,7 +104,7 @@ export default function DashboardPage() {
               <Flame className="w-4 h-4" />
             </div>
           </div>
-          <p className="font-display font-bold text-3xl text-cyber-rose mt-1">{stats ? stats.highRiskContracts : 0}</p>
+          <p className="font-display font-bold text-2xl sm:text-3xl text-cyber-rose mt-1">{stats ? stats.highRiskContracts : 0}</p>
           <div className="text-[10px] text-cyber-rose/80 font-semibold font-mono mt-3 flex items-center gap-1">
             <span>Risk Score &gt; 75</span>
           </div>
@@ -119,7 +119,7 @@ export default function DashboardPage() {
               <Building2 className="w-4 h-4" />
             </div>
           </div>
-          <p className="font-display font-bold text-3xl text-cyber-gold mt-1">{stats ? stats.flaggedVendors : 0}</p>
+          <p className="font-display font-bold text-2xl sm:text-3xl text-cyber-gold mt-1">{stats ? stats.flaggedVendors : 0}</p>
           <div className="text-[10px] text-slate-500 font-mono mt-3">Entities with active shell markers</div>
         </div>
 
@@ -131,7 +131,7 @@ export default function DashboardPage() {
               <ShieldAlert className="w-4 h-4" />
             </div>
           </div>
-          <p className="font-display font-bold text-3xl text-white mt-1">{stats ? stats.openInvestigations : 0}</p>
+          <p className="font-display font-bold text-2xl sm:text-3xl text-white mt-1">{stats ? stats.openInvestigations : 0}</p>
           <div className="text-[10px] text-slate-500 font-mono mt-3">Active forensic tribunal assets</div>
         </div>
       </div>
@@ -141,7 +141,7 @@ export default function DashboardPage() {
         {/* Trend Area Chart (8 Columns) */}
         <div className="lg:col-span-8 p-6 bg-cyber-card border border-cyber-border backdrop-blur-md rounded-2xl shadow-xl">
           <h3 className="font-display font-medium text-sm text-white mb-6 uppercase tracking-wider">Historical Fraud Risk Trend</h3>
-          <div className="h-72 w-full">
+          <div className="h-56 sm:h-72 w-full min-w-0">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={stats ? stats.trend : []}>
                 <defs>
@@ -166,7 +166,7 @@ export default function DashboardPage() {
         {/* Pie Category Risk Variance (4 Columns) */}
         <div className="lg:col-span-4 p-6 bg-cyber-card border border-cyber-border backdrop-blur-md rounded-2xl shadow-xl">
           <h3 className="font-display font-medium text-sm text-white mb-6 uppercase tracking-wider">Category Risk Variance</h3>
-          <div className="h-72 w-full flex flex-col justify-between">
+          <div className="h-56 sm:h-72 w-full min-w-0 flex flex-col justify-between">
             <ResponsiveContainer width="100%" height="75%">
               <PieChart>
                 <Pie
@@ -201,7 +201,7 @@ export default function DashboardPage() {
         {/* Risk Score distribution (5 Columns) */}
         <div className="lg:col-span-5 p-6 bg-cyber-card border border-cyber-border backdrop-blur-md rounded-2xl shadow-xl">
           <h3 className="font-display font-medium text-sm text-white mb-6 uppercase tracking-wider">Audit Score Distribution</h3>
-          <div className="h-64 w-full">
+          <div className="h-52 sm:h-64 w-full min-w-0">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={stats ? stats.riskDistribution : []}>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" opacity={0.2} />
@@ -239,7 +239,7 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <div className="pt-5 mt-5 border-t border-white/[0.05] flex items-center justify-between">
+          <div className="pt-5 mt-5 border-t border-white/[0.05] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <span className="text-xs text-slate-400">Active vetting protocols: <strong>3 core markers</strong> matching patterns.</span>
             <Link to="/contracts" className="text-xs font-mono font-medium text-cyber-teal hover:text-cyber-teal-light transition-colors flex items-center gap-1">
               <span>Inspect Contracts Portal</span>

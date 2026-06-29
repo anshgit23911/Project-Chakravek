@@ -290,7 +290,7 @@ export default function OverviewInteractiveTimeline() {
   return (
     <div className="w-full space-y-12">
       {/* Tab Selectors */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
         {steps.map((step) => {
           const IconComponent = step.icon;
           const isActive = activeStep === step.id;
@@ -329,7 +329,7 @@ export default function OverviewInteractiveTimeline() {
       </div>
 
       {/* Detail Block */}
-      <div className="bg-cyber-card/25 border border-cyber-border/60 rounded-2xl p-6 md:p-8 relative overflow-hidden">
+      <div className="bg-cyber-card/25 border border-cyber-border/60 rounded-2xl p-4 sm:p-6 md:p-8 relative overflow-x-hidden">
         {/* Abstract subtle color accent */}
         <div className={`absolute -right-24 -bottom-24 w-80 h-80 ${currentStep.id === 'ingest' ? 'bg-cyber-teal/5' : currentStep.id === 'reason' ? 'bg-cyber-cyan/5' : currentStep.id === 'vet' ? 'bg-cyber-gold/5' : 'bg-cyber-rose/5'} rounded-full blur-3xl pointer-events-none transition-all duration-500`}></div>
 
@@ -342,7 +342,7 @@ export default function OverviewInteractiveTimeline() {
               </div>
               <div>
                 <span className="text-[10px] font-mono font-bold tracking-widest text-slate-500 uppercase">OPERATION FOCUS • STEP {currentStep.number}</span>
-                <h4 className="text-xl font-semibold text-white tracking-wide">{currentStep.title}</h4>
+                <h4 className="text-lg sm:text-xl font-semibold text-white tracking-wide">{currentStep.title}</h4>
               </div>
             </div>
 

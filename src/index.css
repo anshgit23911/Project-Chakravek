@@ -23,11 +23,38 @@
   --color-cyber-amber: #f97316;
 }
 
+html {
+  overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
   background-color: #030303;
   color: #f8fafc;
   font-family: "Inter", var(--font-sans);
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  min-width: 320px;
+}
+
+img,
+svg,
+video {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Prevent iOS zoom on form focus */
+@media (max-width: 1023px) {
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="search"],
+  input[type="number"],
+  textarea,
+  select {
+    font-size: 16px;
+  }
 }
 
 /* Glassmorphism background matching Clean Minimalism theme specifications */

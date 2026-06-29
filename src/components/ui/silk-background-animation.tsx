@@ -189,7 +189,7 @@ export const Component = ({ children }: { children?: React.ReactNode }) => {
         }
       `}</style>
       
-      <div className="relative min-h-screen w-full overflow-hidden bg-black flex flex-col">
+      <div className="relative min-h-screen w-full overflow-x-hidden bg-black flex flex-col">
         {/* Animated Silk Background */}
         <canvas 
           ref={canvasRef}

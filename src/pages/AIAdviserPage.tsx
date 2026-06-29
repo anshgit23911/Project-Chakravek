@@ -238,20 +238,20 @@ export default function AIAdviserPage() {
   };
 
   return (
-    <div className="p-8 select-none flex-1 flex flex-col h-screen relative bg-[#030303] text-slate-100 overflow-hidden">
+    <div className="p-4 sm:p-6 lg:p-8 select-none flex-1 flex flex-col min-h-0 relative bg-[#030303] text-slate-100 overflow-x-hidden">
       {/* Background ambient glowing shapes */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-gradient-to-br from-cyber-teal/20 via-cyber-cyan/15 to-transparent blur-[120px] rounded-full pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-gradient-to-tr from-cyber-rose/20 via-cyber-violet/15 to-transparent blur-[100px] rounded-full pointer-events-none" />
 
       <div className="relative z-10 flex-1 flex flex-col min-h-0 space-y-6">
         {/* HEADER SEGMENT */}
-        <div className="pb-4 border-b border-cyber-border flex items-center justify-between">
-        <div>
-          <h1 className="font-display font-medium text-2xl text-white flex items-center gap-3">
+        <div className="pb-4 border-b border-cyber-border flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="min-w-0">
+          <h1 className="font-display font-medium text-lg sm:text-2xl text-white flex items-center gap-2 sm:gap-3">
             <span className="p-1.5 rounded-lg bg-cyber-teal/10 border border-cyber-teal-light/30 shadow-[0_0_12px_rgba(20,240,240,0.15)] flex items-center justify-center shrink-0 animate-pulse">
               <Cpu className="w-5 h-5 text-cyber-teal-light" />
             </span>
-            <span>Chakravek Conversational Advisement Node</span>
+            <span className="truncate">Chakravek Conversational Advisement Node</span>
           </h1>
           <p className="text-slate-400 text-xs mt-1">Ask RAG questions from uploaded procurement datasets and central audit records.</p>
         </div>
@@ -374,7 +374,7 @@ export default function AIAdviserPage() {
                   )}
                 </div>
 
-                <div className={`max-w-[80%] rounded-xl p-4 space-y-2 ${
+                <div className={`max-w-[92%] sm:max-w-[80%] rounded-xl p-3 sm:p-4 space-y-2 ${
                   m.role === "user" 
                     ? "bg-cyber-teal/10 text-slate-100 border border-cyber-teal/30" 
                     : "bg-cyber-dark/45 text-slate-300 border border-cyber-border/80"
@@ -436,12 +436,12 @@ export default function AIAdviserPage() {
                 value={inputVal}
                 onChange={(e) => setInputVal(e.target.value)}
                 placeholder="Ask Project Chakravek AI Core about procurement anomalies..."
-                className="w-full bg-cyber-dark border border-cyber-border rounded-lg pl-4 pr-14 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-cyber-teal focus:border-cyber-teal-light transition-all"
+                className="w-full bg-cyber-dark border border-cyber-border rounded-lg pl-4 pr-14 py-3 min-h-11 text-base sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-cyber-teal focus:border-cyber-teal-light transition-all"
               />
               <button
                 type="submit"
                 disabled={sending}
-                className="absolute right-2 p-1.5 bg-cyber-teal hover:bg-cyber-teal-light text-white rounded-md transition-all duration-200 disabled:opacity-50 flex items-center justify-center"
+                className="absolute right-2 p-2.5 min-h-11 min-w-11 bg-cyber-teal hover:bg-cyber-teal-light text-white rounded-md transition-all duration-200 disabled:opacity-50 flex items-center justify-center"
               >
                 <Send className="w-3.5 h-3.5" />
               </button>

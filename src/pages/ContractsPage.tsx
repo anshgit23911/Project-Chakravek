@@ -82,7 +82,7 @@ export default function ContractsPage() {
   const categories = ["All", "Radar & Sensors", "Ammunition", "Heavy Vehicles", "Logistic Supplies"];
 
   return (
-    <div className="p-8 select-none relative flex-1 min-h-screen bg-[#030303] text-slate-100 overflow-hidden">
+    <div className="p-4 sm:p-6 lg:p-8 select-none relative flex-1 min-h-screen bg-[#030303] text-slate-100 overflow-x-hidden">
       {/* Background ambient glowing shapes */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-gradient-to-br from-cyber-teal/20 via-cyber-cyan/15 to-transparent blur-[120px] rounded-full pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-gradient-to-tr from-cyber-rose/20 via-cyber-violet/15 to-transparent blur-[100px] rounded-full pointer-events-none" />
@@ -91,7 +91,7 @@ export default function ContractsPage() {
         {/* HEADER BAR */}
         <div className="pb-6 border-b border-cyber-border flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="font-display font-medium text-2xl tracking-normal text-white">Defence Contracts Index</h1>
+          <h1 className="font-display font-medium text-xl sm:text-2xl tracking-normal text-white">Defence Contracts Index</h1>
           <p className="text-slate-400 text-xs mt-1">Search, vet, and investigate advanced military acquisition tenders flagged by Project Chakravek AI.</p>
         </div>
       </div>
@@ -147,8 +147,8 @@ export default function ContractsPage() {
           LOADING RELATIONAL PROCUREMENT DIRECTORIES...
         </div>
       ) : (
-        <div className="bg-cyber-card border border-cyber-border rounded-xl spill-hidden overflow-x-auto">
-          <table className="w-full border-collapse text-left text-sm font-sans">
+        <div className="bg-cyber-card border border-cyber-border rounded-xl spill-hidden overflow-x-auto -mx-1 px-1">
+          <table className="w-full min-w-[720px] border-collapse text-left text-sm font-sans">
             <thead>
               <tr className="border-b border-cyber-border bg-cyber-dark/45 font-mono text-xs uppercase tracking-wider text-slate-450">
                 <th className="p-4">Tender ID</th>
@@ -187,7 +187,7 @@ export default function ContractsPage() {
                   >
                     <td className="p-4 font-mono font-bold text-cyber-teal-light">{c.id}</td>
                     <td className="p-4">
-                      <div className="font-semibold text-white truncate max-w-[280px]">{c.title}</div>
+                      <div className="font-semibold text-white truncate max-w-[140px] sm:max-w-[200px] lg:max-w-[280px]">{c.title}</div>
                       <div className="text-xs text-slate-500 font-mono mt-0.5">{c.department} &bull; {c.category}</div>
                     </td>
                     <td className="p-4">
@@ -210,7 +210,7 @@ export default function ContractsPage() {
                     <td className="p-4 text-center" onClick={(e) => e.stopPropagation()}>
                       <button 
                         onClick={() => handleOpenDrawer(c)}
-                        className="px-3.5 py-1.5 bg-cyber-dark hover:bg-cyber-card-hover border border-cyber-border text-xs text-slate-300 font-semibold rounded-lg flex items-center gap-1 mx-auto transition-colors"
+                        className="px-3.5 py-2 min-h-11 bg-cyber-dark hover:bg-cyber-card-hover border border-cyber-border text-xs text-slate-300 font-semibold rounded-lg flex items-center gap-1 mx-auto transition-colors"
                       >
                         <span>Investigate</span>
                         <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
@@ -234,15 +234,15 @@ export default function ContractsPage() {
 
       {/* RIGHT SLIDE OUT DRAWER DETALL PANEL */}
       {selectedContract && (
-        <div className="absolute inset-0 z-40 flex justify-end">
+        <div className="fixed inset-0 z-50 flex justify-end">
           {/* Overlay backdrop */}
-          <div 
+          <div
             onClick={() => setSelectedContract(null)}
             className="absolute inset-0 bg-cyber-bg/75 backdrop-blur-sm transition-opacity"
           ></div>
 
           {/* Drawer Body */}
-          <div className="relative w-full max-w-xl bg-cyber-dark border-l border-cyber-border h-full shadow-2xl overflow-y-auto flex flex-col justify-between z-50">
+          <div className="relative w-full sm:max-w-xl bg-cyber-dark border-l border-cyber-border h-full shadow-2xl overflow-y-auto flex flex-col justify-between z-50">
             {/* Header */}
             <div className="p-5 border-b border-cyber-border bg-cyber-card flex items-center justify-between">
               <div className="flex items-center gap-2.5">
@@ -251,9 +251,9 @@ export default function ContractsPage() {
                 </span>
                 <span className="text-sm font-mono font-semibold text-cyber-teal-light">{selectedContract.id}</span>
               </div>
-              <button 
+              <button
                 onClick={() => setSelectedContract(null)}
-                className="p-1 text-slate-400 hover:text-white rounded-lg hover:bg-cyber-card-hover transition-colors"
+                className="p-2.5 min-h-11 min-w-11 text-slate-400 hover:text-white rounded-lg hover:bg-cyber-card-hover transition-colors flex items-center justify-center"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -267,7 +267,7 @@ export default function ContractsPage() {
               </div>
 
               {/* Row Stats */}
-              <div className="grid grid-cols-3 gap-4 border-y border-cyber-border/40 py-4 font-mono text-center">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 border-y border-cyber-border/40 py-4 font-mono text-center">
                 <div>
                   <span className="text-[10px] text-slate-500 block">TOTAL VALUE</span>
                   <span className="text-sm font-semibold text-white">₹{selectedContract.amount} Cr</span>
@@ -345,11 +345,11 @@ export default function ContractsPage() {
             </div>
 
             {/* Foot Trigger actions in Drawer */}
-            <div className="p-5 border-t border-cyber-border bg-cyber-card flex items-center justify-between">
+            <div className="p-4 sm:p-5 border-t border-cyber-border bg-cyber-card flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <span className="text-[10px] font-mono text-slate-500">Last updated: {selectedContract.registeredDate}</span>
-              <button 
+              <button
                 onClick={() => setSelectedContract(null)}
-                className="px-4 py-2 bg-cyber-teal hover:bg-cyber-teal-light border border-cyber-teal-light/20 text-white text-xs font-semibold rounded-lg flex items-center gap-1 transition-all"
+                className="px-4 py-2.5 min-h-11 bg-cyber-teal hover:bg-cyber-teal-light border border-cyber-teal-light/20 text-white text-xs font-semibold rounded-lg flex items-center justify-center gap-1 transition-all w-full sm:w-auto"
               >
                 <span>Complete Auditing</span>
                 <ChevronRight className="w-3.5 h-3.5" />

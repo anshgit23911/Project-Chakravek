@@ -311,7 +311,7 @@ CREATE TABLE IF NOT EXISTS public.investigations (
   };
 
   return (
-    <div className="p-8 space-y-8 select-none flex-1 min-h-screen bg-[#030303] text-slate-100 overflow-hidden relative">
+    <div className="p-4 sm:p-6 lg:p-8 space-y-6 sm:space-y-8 select-none flex-1 min-h-screen bg-[#030303] text-slate-100 overflow-x-hidden relative">
       {/* Background Radial Orbs */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-gradient-to-br from-cyber-teal/20 via-cyber-cyan/15 to-transparent blur-[120px] rounded-full pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-gradient-to-tr from-cyber-rose/20 via-cyber-violet/15 to-transparent blur-[100px] rounded-full pointer-events-none" />
@@ -319,9 +319,9 @@ CREATE TABLE IF NOT EXISTS public.investigations (
       {/* HEADER SECTION */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between pb-6 border-b border-white/[0.06] gap-4 relative z-10">
         <div>
-          <h1 className="font-display font-medium text-2xl text-white flex items-center gap-3">
-            <Database className="w-6 h-6 text-cyber-teal" />
-            <span>Data Management & Ledger Hub</span>
+          <h1 className="font-display font-medium text-lg sm:text-2xl text-white flex items-center gap-2 sm:gap-3">
+            <Database className="w-5 h-5 sm:w-6 sm:h-6 text-cyber-teal shrink-0" />
+            <span className="truncate">Data Management & Ledger Hub</span>
           </h1>
           <p className="text-slate-400 text-xs mt-1">Upload defense procurement guidelines, ingest active contract sheets, or register manual audits securely.</p>
         </div>
@@ -441,7 +441,7 @@ CREATE TABLE IF NOT EXISTS public.investigations (
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="text-[10px] uppercase font-bold tracking-widest text-slate-400 block mb-1.5 font-mono">Value (INR Cr)</label>
                   <input
@@ -470,7 +470,7 @@ CREATE TABLE IF NOT EXISTS public.investigations (
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="text-[10px] uppercase font-bold tracking-widest text-slate-400 block mb-1.5 font-mono">Department</label>
                   <input
@@ -711,8 +711,8 @@ CREATE TABLE IF NOT EXISTS public.investigations (
                 <span>STATE REPLICATION METRICS</span>
               </h3>
 
-              <div className="overflow-hidden border border-white/[0.06] rounded-xl bg-[#030303]">
-                <table className="w-full text-left border-collapse">
+              <div className="overflow-x-auto border border-white/[0.06] rounded-xl bg-[#030303]">
+                <table className="w-full min-w-[480px] text-left border-collapse">
                   <thead>
                     <tr className="bg-white/[0.02] border-b border-white/[0.06]">
                       <th className="p-3 text-[9px] uppercase tracking-wider font-mono text-slate-400 font-bold">Secure Table Ledger</th>
@@ -758,7 +758,7 @@ CREATE TABLE IF NOT EXISTS public.investigations (
               </div>
 
               {/* ACTION OPERATIONS BOX */}
-              <div className="grid grid-cols-2 gap-4 pt-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                 <button
                   onClick={() => handleSync("export")}
                   disabled={syncing || !dbStatus?.isLive}

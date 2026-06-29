@@ -33,7 +33,7 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="bg-cyber-bg min-h-screen">
+    <div className="bg-cyber-bg min-h-screen overflow-x-hidden">
       {/* GEOMETRIC HERO BANNER SECTION */}
       <HeroGeometric
         badge="DEFENCE ACQUISITION OVERSIGHT PROJECT"
@@ -41,24 +41,24 @@ export default function LandingPage() {
         title2="CAG Audit Intelligence Node"
         description="An advanced AI-powered defence procurement fraud detection and audit intelligence platform. Integrated directly with the Comptroller & Auditor General (CAG) of India rules to target shell bidding, pricing deviations, and network anomalies."
       >
-        <div className="flex flex-wrap items-center justify-center gap-4 mb-14 relative z-20">
+        <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 mb-10 sm:mb-14 relative z-20 px-4">
           <Link 
             to="/signup" 
-            className="px-6 py-2.5 bg-cyber-teal-light hover:bg-[#0d9488] text-white font-medium text-sm rounded-md transition-all flex items-center gap-2 group shadow-lg shadow-cyber-teal-light/20 cursor-pointer"
+            className="px-5 sm:px-6 py-3 min-h-11 bg-cyber-teal-light hover:bg-[#0d9488] text-white font-medium text-sm rounded-md transition-all flex items-center gap-2 group shadow-lg shadow-cyber-teal-light/20 cursor-pointer"
           >
             <span>Initialize System Node</span>
             <ArrowUpRight className="w-4 h-4 cursor-pointer" />
           </Link>
           <Link 
             to="/login" 
-            className="px-6 py-2.5 bg-cyber-card border border-cyber-border text-slate-300 hover:text-white font-medium text-sm rounded-md hover:bg-cyber-card-hover transition-colors cursor-pointer"
+            className="px-5 sm:px-6 py-3 min-h-11 bg-cyber-card border border-cyber-border text-slate-300 hover:text-white font-medium text-sm rounded-md hover:bg-cyber-card-hover transition-colors cursor-pointer"
           >
             Auditor Portal Login
           </Link>
         </div>
 
         {/* ANIMATED STATISTICS CARDS */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-5xl mx-auto relative z-20">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 max-w-5xl mx-auto relative z-20 px-4">
           {stats.map((s, idx) => (
             <div key={idx} className="p-4 bg-cyber-card/70 border border-cyber-border rounded-lg text-left hover:border-cyber-teal-light/30 transition-colors shadow-md">
               <span className="text-[10px] uppercase tracking-wider text-slate-450 font-mono block mb-1">{s.label}</span>
@@ -72,11 +72,11 @@ export default function LandingPage() {
       </HeroGeometric>
 
       {/* CORE OBJECTIVE & PROBLEM STATEMENT */}
-      <section className="max-w-6xl mx-auto px-6 py-20">
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-20">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div>
             <div className="text-cyber-teal-light font-mono text-xs uppercase tracking-widest mb-2 font-semibold">PART I — SECURITY CORE</div>
-            <h2 className="font-display font-medium text-3xl tracking-tight text-white mb-6">
+            <h2 className="font-display font-medium text-2xl sm:text-3xl tracking-tight text-white mb-6">
               The Fraud Challenge in Advanced Defence Sourcing
             </h2>
             <div className="space-y-4 text-slate-300 font-sans text-sm leading-relaxed">
@@ -163,11 +163,11 @@ export default function LandingPage() {
       </section>
 
       {/* KEY FEATURES BENTO GRID */}
-      <section className="bg-cyber-dark/40 py-20 border-y border-cyber-border">
-        <div className="max-w-6xl mx-auto px-6">
+      <section className="bg-cyber-dark/40 py-12 sm:py-20 border-y border-cyber-border">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-16">
             <span className="text-cyber-teal-light font-mono text-xs uppercase tracking-widest font-semibold block mb-2">SYSTEM FUNCTIONS</span>
-            <h2 className="font-display font-medium text-3xl tracking-tight text-white mb-4">
+            <h2 className="font-display font-medium text-2xl sm:text-3xl tracking-tight text-white mb-4">
               Multi-Tiered Audit Security Capabilities
             </h2>
             <p className="text-slate-400 max-w-2xl mx-auto text-sm leading-relaxed">
@@ -384,16 +384,16 @@ export default function LandingPage() {
       </section>
 
       {/* DETAILED SPECIFICATIONS SECTIONS */}
-      <section className="bg-[#040509]/30 py-24 relative overflow-hidden border-b border-cyber-border">
+      <section className="bg-[#040509]/30 py-12 sm:py-20 lg:py-24 relative overflow-x-hidden border-b border-cyber-border">
         {/* Ambient subtle backdrops */}
         <div className="absolute top-1/4 left-1/10 w-96 h-96 bg-cyber-teal/5 rounded-full blur-3xl pointer-events-none"></div>
         <div className="absolute top-2/3 right-1/10 w-96 h-96 bg-cyber-violet/5 rounded-full blur-3xl pointer-events-none"></div>
 
-        <div className="max-w-5xl mx-auto px-6 space-y-24">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 space-y-12 sm:space-y-24">
           {/* Header */}
           <div className="text-center mb-16">
             <span className="text-cyber-teal-light font-mono text-xs uppercase tracking-widest font-semibold block mb-2">SYSTEM ARCHITECTURE SPECIFICATIONS</span>
-            <h2 className="font-display font-medium text-3xl tracking-tight text-white mb-4">
+            <h2 className="font-display font-medium text-2xl sm:text-3xl tracking-tight text-white mb-4">
               Detailed Feature Analysis
             </h2>
             <p className="text-slate-400 max-w-xl mx-auto text-xs leading-relaxed">
@@ -704,15 +704,15 @@ export default function LandingPage() {
       </section>
 
       {/* SYSTEM OVERVIEW & WORKFLOW INTEGRATION */}
-      <section className="bg-gradient-to-b from-[#040509]/40 to-[#020306]/95 py-24 relative overflow-hidden border-b border-cyber-border">
+      <section className="bg-gradient-to-b from-[#040509]/40 to-[#020306]/95 py-12 sm:py-20 lg:py-24 relative overflow-x-hidden border-b border-cyber-border">
         {/* Ambient subtle backdrops */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-cyber-teal/5 rounded-full blur-[140px] pointer-events-none"></div>
 
-        <div className="max-w-6xl mx-auto px-6 relative z-10">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
           {/* Header */}
           <div className="text-center mb-16">
             <span className="text-cyber-cyan font-mono text-xs uppercase tracking-widest font-bold block mb-2">SYSTEM INTEGRITY OVERVIEW</span>
-            <h2 className="font-display font-medium text-3xl tracking-tight text-white mb-4">
+            <h2 className="font-display font-medium text-2xl sm:text-3xl tracking-tight text-white mb-4">
               Operational Lifecycle Integration
             </h2>
             <p className="text-slate-400 max-w-xl mx-auto text-xs leading-relaxed">
@@ -727,7 +727,7 @@ export default function LandingPage() {
 
       {/* MINIMAL FOOTER */}
       <footer className="py-12 border-t border-cyber-border text-center text-xs text-slate-500 font-mono bg-black/30">
-        <div className="flex justify-center gap-6 mb-4">
+        <div className="flex flex-wrap justify-center gap-4 sm:gap-6 mb-4 px-4">
           <Link to="/info" className="hover:text-white transition-colors">About Us</Link>
           <span className="text-slate-750">&bull;</span>
           <Link to="/info" className="hover:text-white transition-colors">Terms & Conditions</Link>

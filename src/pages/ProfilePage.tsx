@@ -62,7 +62,7 @@ export default function ProfilePage({ user, onProfileUpdate }: ProfilePageProps)
   const nodeId = `NODE-IND-${user?.id?.toUpperCase() || "9921"}`;
 
   return (
-    <div className="p-8 space-y-8 select-none relative min-h-screen bg-[#030303] text-slate-100 overflow-hidden">
+    <div className="p-4 sm:p-6 lg:p-8 space-y-6 sm:space-y-8 select-none relative min-h-screen bg-[#030303] text-slate-100 overflow-x-hidden">
       {/* Background ambient glowing shapes */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-gradient-to-br from-cyber-teal/20 via-cyber-cyan/15 to-transparent blur-[120px] rounded-full pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-gradient-to-tr from-cyber-rose/20 via-cyber-violet/15 to-transparent blur-[100px] rounded-full pointer-events-none" />
@@ -70,7 +70,7 @@ export default function ProfilePage({ user, onProfileUpdate }: ProfilePageProps)
       {/* HEADER SECTION */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-6 border-b border-white/[0.06] relative z-10">
         <div>
-          <h1 className="font-display font-semibold text-2xl tracking-tight text-white">Auditor Profile</h1>
+          <h1 className="font-display font-semibold text-xl sm:text-2xl tracking-tight text-white">Auditor Profile</h1>
           <p className="text-slate-400 text-xs mt-1">Manage credentials, review active clearances, and edit station details.</p>
         </div>
         <div className="flex items-center gap-2.5 font-mono text-xs text-cyber-teal-light px-4 py-2 bg-cyber-teal/10 border border-cyber-teal/20 rounded-xl">

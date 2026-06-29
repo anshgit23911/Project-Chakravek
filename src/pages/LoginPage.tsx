@@ -252,7 +252,7 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
               <ShieldAlert className="w-8 h-8 text-cyber-teal-light animate-pulse" />
             </div>
           </div>
-          <h2 className="text-center font-sans font-semibold text-3xl tracking-tight text-white drop-shadow-sm">
+          <h2 className="text-center font-sans font-semibold text-2xl sm:text-3xl tracking-tight text-white drop-shadow-sm">
             Auditor Gateway
           </h2>
           <p className="mt-2 text-center text-xs text-slate-400 font-mono tracking-widest uppercase">
@@ -267,7 +267,7 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
         </div>
 
         <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md relative z-10">
-          <div className="bg-[#0b0f19]/90 border border-cyber-border/80 backdrop-blur-md py-8 px-8 shadow-[0_20px_50px_rgba(0,0,0,0.8)] rounded-3xl relative overflow-hidden group">
+          <div className="bg-[#0b0f19]/90 border border-cyber-border/80 backdrop-blur-md py-6 sm:py-8 px-5 sm:px-8 shadow-[0_20px_50px_rgba(0,0,0,0.8)] rounded-3xl relative overflow-hidden group">
             {/* Subtle premium corner highlights */}
             <div className="absolute top-0 left-0 w-16 h-px bg-gradient-to-r from-transparent via-cyber-teal-light/50 to-transparent"></div>
             <div className="absolute top-0 right-0 w-px h-16 bg-gradient-to-b from-transparent via-cyber-teal-light/40 to-transparent"></div>
@@ -292,7 +292,7 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
                 type="button"
                 disabled={loading || !!ssoLoading}
                 onClick={() => handleSsoLogin("google")}
-                className="w-full flex items-center justify-center py-2.5 px-4 bg-[#0f1422] hover:bg-[#161d31] border border-cyber-border hover:border-slate-500 text-slate-200 hover:text-white rounded-xl transition duration-200 text-sm font-medium shadow-sm hover:shadow-md cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed group/sso"
+                className="w-full flex items-center justify-center py-3 px-4 min-h-11 bg-[#0f1422] hover:bg-[#161d31] border border-cyber-border hover:border-slate-500 text-slate-200 hover:text-white rounded-xl transition duration-200 text-sm font-medium shadow-sm hover:shadow-md cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed group/sso"
               >
                 {ssoLoading === "google" ? (
                   <div className="w-5 h-5 border-2 border-slate-400 border-t-white rounded-full animate-spin mr-3"></div>
@@ -334,7 +334,7 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
                     placeholder="auditor@nic.in"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="block w-full pl-10 pr-4 py-3 bg-[#0d1220]/80 border border-cyber-border/80 focus:border-cyber-teal-light rounded-xl text-sm text-white placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-cyber-teal transition-all font-sans"
+                    className="block w-full pl-10 pr-4 py-3 min-h-11 bg-[#0d1220]/80 border border-cyber-border/80 focus:border-cyber-teal-light rounded-xl text-base sm:text-sm text-white placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-cyber-teal transition-all font-sans"
                   />
                 </div>
               </div>
@@ -356,7 +356,7 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
                     placeholder="••••••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="block w-full pl-10 pr-4 py-3 bg-[#0d1220]/80 border border-cyber-border/80 focus:border-cyber-teal-light rounded-xl text-sm text-white placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-cyber-teal transition-all font-sans"
+                    className="block w-full pl-10 pr-4 py-3 min-h-11 bg-[#0d1220]/80 border border-cyber-border/80 focus:border-cyber-teal-light rounded-xl text-base sm:text-sm text-white placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-cyber-teal transition-all font-sans"
                   />
                 </div>
               </div>
@@ -391,7 +391,7 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
                 <button
                   type="submit"
                   disabled={loading || !!ssoLoading}
-                  className="w-full bg-cyber-teal hover:bg-cyber-teal-light text-white font-medium py-3 px-4 rounded-xl transition duration-200 flex items-center justify-center gap-2 text-sm cursor-pointer shadow-lg shadow-cyber-teal/15 hover:shadow-cyber-teal/30 focus:outline-none"
+                  className="w-full bg-cyber-teal hover:bg-cyber-teal-light text-white font-medium py-3 min-h-11 px-4 rounded-xl transition duration-200 flex items-center justify-center gap-2 text-sm cursor-pointer shadow-lg shadow-cyber-teal/15 hover:shadow-cyber-teal/30 focus:outline-none"
                 >
                   {loading ? (
                     <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
