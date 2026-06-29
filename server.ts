@@ -792,17 +792,27 @@ function importRecordsFromDatasets() {
   console.log(`RAG Indexer: Sync complete! Dynamic database contains ${vendorsState.length} vendors and ${contractsState.length} contracts.`);
 }
 
-// Perform initial boot scanning asynchronously so we do not block Express module load or server startup on Vercel
-setTimeout(() => {
+let datasetsIndexed = false;
+
+function ensureDatasetsIndexed() {
+  if (datasetsIndexed) return;
+  datasetsIndexed = true;
   try {
-    safeWriteBootLog('Boot logging started...', true);
+    safeWriteBootLog("Boot logging started...", true);
     safeWriteBootLog(`Current directory: ${process.cwd()}`);
     indexLocalDatasets();
-    safeWriteBootLog(`Scan complete. contractsState size: ${contractsState.length}, vendorsState size: ${vendorsState.length}`);
+    safeWriteBootLog(
+      `Scan complete. contractsState size: ${contractsState.length}, vendorsState size: ${vendorsState.length}`
+    );
   } catch (bootErr: any) {
     safeWriteBootLog(`Boot Error: ${bootErr.stack || bootErr}`);
   }
-}, 0);
+}
+
+// On Vercel, defer heavy Excel indexing until the first API request to avoid cold-start timeouts.
+if (!process.env.VERCEL) {
+  setTimeout(() => ensureDatasetsIndexed(), 0);
+}
 
 function searchDatasets(queryText: string, limit = 15): { row: DatasetRow; source: string; score: number }[] {
   const queryLower = queryText.toLowerCase();
@@ -883,6 +893,13 @@ function searchDatasets(queryText: string, limit = 15): { row: DatasetRow; sourc
 
 export const app = express();
 app.use(express.json());
+
+if (process.env.VERCEL) {
+  app.use((_req, _res, next) => {
+    ensureDatasetsIndexed();
+    next();
+  });
+}
 
 // Setup simple authentication session storage
 let currentSessionUser: User | null = usersState[0];
