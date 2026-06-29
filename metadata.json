@@ -1,0 +1,6 @@
+{
+  "name": "Project Chakravek",
+  "description": "Defence Procurement Fraud Detection and CAG Audit Intelligence Platform",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
