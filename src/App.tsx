@@ -107,6 +107,69 @@ export default function App() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    // Detect if the window received an OAuth callback with #access_token=
+    const hash = window.location.hash;
+    if (hash && hash.includes("access_token=")) {
+      try {
+        const hashParams = new URLSearchParams(hash.substring(1));
+        const accessToken = hashParams.get("access_token");
+        if (accessToken) {
+          const base64Url = accessToken.split(".")[1];
+          const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+          const jsonPayload = decodeURIComponent(
+            atob(base64)
+              .split("")
+              .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+              .join("")
+          );
+          const payload = JSON.parse(jsonPayload);
+          const metadata = payload.user_metadata || {};
+          const appMetadata = payload.app_metadata || {};
+          const provider = appMetadata.provider === "azure" ? "microsoft" : (appMetadata.provider || "google");
+          const email = payload.email || metadata.email || "";
+          const id = payload.sub || "";
+          const name = metadata.full_name || metadata.name || email.split("@")[0].toUpperCase();
+
+          const userData = {
+            id,
+            email,
+            name,
+            organization: metadata.organization || "Ministry of Defence, Procurement Cell",
+            role: metadata.role || "Auditor"
+          };
+
+          if (window.opener) {
+            window.opener.postMessage({
+              type: "SUPABASE_OAUTH_SUCCESS",
+              accessToken,
+              provider,
+              user: userData
+            }, "*");
+            setTimeout(() => window.close(), 500);
+          } else {
+            // Full window redirect fallback
+            fetch("/api/auth/login-token", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ accessToken, user: userData })
+            })
+              .then((res) => res.json())
+              .then((data) => {
+                if (data.user) {
+                  setCurrentUser(data.user);
+                  window.history.replaceState(null, "", "/dashboard");
+                }
+              })
+              .catch((err) => console.error("OAuth token sync failed:", err));
+          }
+        }
+      } catch (err) {
+        console.error("Failed to parse OAuth hash token:", err);
+      }
+    }
+  }, []);
+
   const handleLogout = async () => {
     try {
       await fetch("/api/auth/logout", { method: "POST" });

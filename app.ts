@@ -1188,7 +1188,16 @@ let currentSessionUser: User | null = usersState[0];
       return res.json({ supabaseConfigured: false, googleEnabled: false });
     }
     try {
-      const origin = req.headers.origin || (req.headers.referer ? new URL(req.headers.referer).origin : "http://localhost:3000");
+      const queryOrigin = (req.query.origin as string || "").trim();
+      const forwardedHost = (req.headers['x-forwarded-host'] as string || "").trim();
+      const forwardedProto = (req.headers['x-forwarded-proto'] as string || "https").trim();
+      
+      let origin = queryOrigin 
+        || (forwardedHost ? `${forwardedProto}://${forwardedHost}` : null)
+        || req.headers.origin 
+        || (req.headers.referer ? new URL(req.headers.referer).origin : "http://localhost:3000");
+
+      origin = origin.replace(/\/+$/, "");
       const redirectUrl = `${origin}/api/auth/supabase-callback`;
       
       const { data, error } = await supabase.auth.signInWithOAuth({

@@ -166,7 +166,8 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
 
     try {
       if (provider === "google" || provider === "microsoft") {
-        const resUrl = await fetch(`/api/auth/${provider}-url`);
+        const clientOrigin = window.location.origin;
+        const resUrl = await fetch(`/api/auth/${provider}-url?origin=${encodeURIComponent(clientOrigin)}`);
         
         let urlData: any = {};
         const contentType = resUrl.headers.get("content-type");
