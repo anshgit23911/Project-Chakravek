@@ -5,28 +5,32 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+export function cleanText(text: string): string {
+  if (!text) return "";
+  return text
+    .replace(/^#{1,6}\s*(.+)$/gm, '$1')
+    .replace(/\*{1,3}([^*]+)\*{1,3}/g, '$1')
+    .replace(/^\s*\*\s+/gm, '• ')
+    .replace(/`([^`]+)`/g, '$1')
+    .replace(/[*#`]/g, '')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
+
 export function formatReportText(text: string): string {
   if (!text) return "";
-  const lines = text.split("\n");
+  const cleaned = cleanText(text);
+  const lines = cleaned.split("\n");
   const processedLines = lines.map(line => {
     const trimmed = line.trim();
-    if (trimmed.startsWith("#")) {
-      // It's a header line
-      // Remove all '#' symbols and any leading spaces
-      const cleanLine = trimmed.replace(/^#+\s*/, "");
-      // Remove any '*' from the header line
-      const cleanLineNoStars = cleanLine.replace(/\*/g, "").trim();
-      return `<b>${cleanLineNoStars}</b>`;
-    } else {
-      // It's a regular line
-      let processedLine = line;
-      // If it starts with a bullet like '* ', convert to standard bullet '-'
-      if (trimmed.startsWith("*")) {
-        processedLine = line.replace(/^\s*\*\s*/, "- ");
-      }
-      // Remove all remaining '*' characters
-      return processedLine.replace(/\*/g, "");
+    // Section headers: uppercase line ending with colon or short all-caps title
+    if ((trimmed.endsWith(":") && trimmed.length < 60) || (/^[0-9]+\.\s+[A-Z\s]+$/.test(trimmed)) || (/^[A-Z\s]{4,}$/.test(trimmed) && trimmed.length < 45)) {
+      return `<strong class="text-white block mt-3 mb-1 text-xs tracking-wide uppercase">${trimmed}</strong>`;
     }
+    if (trimmed.startsWith("•") || trimmed.startsWith("-")) {
+      return `<div class="pl-3 py-0.5 text-slate-300">• ${trimmed.replace(/^[•-]\s*/, "")}</div>`;
+    }
+    return line;
   });
   return processedLines.join("\n");
 }

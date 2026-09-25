@@ -14,10 +14,143 @@ import {
   History,
   MessageSquare,
   Trash2,
-  User
+  User,
+  Copy,
+  Check,
+  ShieldAlert
 } from "lucide-react";
 import { ChatMessage } from "../types";
 import AISettingsControl, { getAISettings } from "../components/AISettingsControl";
+
+// Token highlighter for Contract IDs, Currency, and Deviations
+function formatHighlightTokens(text: string): React.ReactNode {
+  const tokenRegex = /\b([C|V]-\d{3,5}|GEM-[\w\d-]+|RT-[\w\d-]+|INR\s*[\d,.]+\s*(?:Crore|Cr|Lakh)?|₹\s*[\d,.]+\s*(?:Cr|Crore)?|[+-]?\d+(?:\.\d+)?%|\b(?:Risk Score|Anomaly Score|Anomaly Index)[:\s]+\d+(?:\/\d+)?)\b/gi;
+
+  const parts: React.ReactNode[] = [];
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+
+  while ((match = tokenRegex.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push(text.substring(lastIndex, match.index));
+    }
+    const token = match[0];
+    const tokenLower = token.toLowerCase();
+
+    if (tokenLower.startsWith("c-") || tokenLower.startsWith("gem-") || tokenLower.startsWith("rt-") || tokenLower.startsWith("v-")) {
+      parts.push(
+        <span key={match.index} className="font-mono text-[11px] font-semibold text-cyber-teal-light bg-cyber-teal/15 px-1.5 py-0.5 rounded border border-cyber-teal-light/25 inline-block mx-0.5">
+          {token}
+        </span>
+      );
+    } else if (tokenLower.includes("inr") || tokenLower.includes("₹")) {
+      parts.push(
+        <span key={match.index} className="font-mono text-[11px] font-medium text-amber-300 bg-amber-950/30 px-1.5 py-0.5 rounded border border-amber-500/25 inline-block mx-0.5">
+          {token}
+        </span>
+      );
+    } else if (token.includes("%") || tokenLower.includes("score") || tokenLower.includes("anomaly")) {
+      const isNegativeOrHigh = token.includes("+") || parseInt(token) >= 70;
+      parts.push(
+        <span key={match.index} className={`font-mono text-[11px] font-medium px-1.5 py-0.5 rounded border inline-block mx-0.5 ${
+          isNegativeOrHigh
+            ? "text-rose-400 bg-rose-950/30 border-rose-800/30"
+            : "text-emerald-400 bg-emerald-950/30 border-emerald-800/30"
+        }`}>
+          {token}
+        </span>
+      );
+    } else {
+      parts.push(<strong key={match.index} className="text-white font-medium">{token}</strong>);
+    }
+
+    lastIndex = match.index + token.length;
+  }
+
+  if (lastIndex < text.length) {
+    parts.push(text.substring(lastIndex));
+  }
+
+  return parts.length > 0 ? <>{parts}</> : text;
+}
+
+// Structured Clean Advisory Renderer (Strips all *, #, ` and formats with executive typographic layout)
+function FormattedAIResponse({ text }: { text: string }) {
+  // Strip any residual asterisks, hashes, backticks
+  const cleaned = text
+    .replace(/^#{1,6}\s*(.+)$/gm, '$1')
+    .replace(/\*{1,3}([^*]+)\*{1,3}/g, '$1')
+    .replace(/^\s*\*\s+/gm, '• ')
+    .replace(/`([^`]+)`/g, '$1')
+    .replace(/[*#`]/g, '')
+    .trim();
+
+  const lines = cleaned.split("\n");
+  const elements: React.ReactNode[] = [];
+  let currentList: string[] = [];
+
+  const flushList = (keyPrefix: string) => {
+    if (currentList.length > 0) {
+      elements.push(
+        <ul key={`${keyPrefix}-list`} className="space-y-1.5 my-2 pl-0.5">
+          {currentList.map((item, idx) => (
+            <li key={idx} className="flex items-start gap-2.5 text-xs text-slate-200 leading-relaxed">
+              <span className="w-1.5 h-1.5 rounded-full bg-cyber-teal-light shrink-0 mt-1.5 shadow-[0_0_6px_rgba(20,240,240,0.5)]"></span>
+              <span className="flex-1">{formatHighlightTokens(item)}</span>
+            </li>
+          ))}
+        </ul>
+      );
+      currentList = [];
+    }
+  };
+
+  lines.forEach((line, idx) => {
+    const trimmed = line.trim();
+    if (!trimmed) {
+      flushList(`flush-${idx}`);
+      return;
+    }
+
+    // Bullet point check
+    if (trimmed.startsWith("•") || trimmed.startsWith("-")) {
+      const itemText = trimmed.replace(/^[•-]\s*/, "");
+      currentList.push(itemText);
+      return;
+    }
+
+    flushList(`line-${idx}`);
+
+    // Section header check
+    const isHeader = 
+      (trimmed.endsWith(":") && trimmed.length < 65) ||
+      (/^[0-9]+\.\s+[A-Z\s&]+:?$/.test(trimmed)) ||
+      (/^[A-Z\s&/:()-]{4,55}$/.test(trimmed) && !trimmed.includes("INR") && !trimmed.includes("CRORE") && !trimmed.includes("Crores"));
+
+    if (isHeader) {
+      elements.push(
+        <div key={`header-${idx}`} className="pt-3 pb-1 first:pt-0">
+          <div className="flex items-center gap-2 text-cyber-teal-light font-display text-[11px] font-bold tracking-wider uppercase pb-1 border-b border-cyber-teal/20">
+            <span className="w-1.5 h-1.5 rounded-xs bg-cyber-teal-light"></span>
+            <span>{trimmed.replace(/:$/, "")}</span>
+          </div>
+        </div>
+      );
+      return;
+    }
+
+    // Standard paragraph
+    elements.push(
+      <p key={`p-${idx}`} className="text-xs text-slate-200 leading-relaxed font-sans">
+        {formatHighlightTokens(trimmed)}
+      </p>
+    );
+  });
+
+  flushList("final");
+
+  return <div className="space-y-2">{elements}</div>;
+}
 
 export interface ChatSession {
   id: string;
@@ -33,13 +166,14 @@ export default function AIAdviserPage() {
   const [inputVal, setInputVal] = useState("");
   const [sending, setSending] = useState(false);
   const [confirmClear, setConfirmClear] = useState(false);
+  const [copiedMsgId, setCopiedMsgId] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const sampleQueries = [
     "Search CAG audit findings regarding emergency fast track procedure delivery delays.",
-    "Find high-value GeM procurement orders flagged for pricing anomalies.",
-    "List eProcurement tenders with single-bidder or price deviation anomalies.",
-    "Analyze vendor risk networks for Zenith Armaments and linked shell entities."
+    "Analyze high-risk contracts with price deviation exceeding 50% in the GeM dataset.",
+    "Find eProcurement defense tenders flagged for single-bidder exceptions.",
+    "Investigate vendor risk networks for Zenith Armaments and linked shell entities."
   ];
 
   // Helper to create initial welcome message
@@ -143,6 +277,23 @@ export default function AIAdviserPage() {
     setActiveSessionId(defaultSession.id);
     localStorage.setItem("chakravek_chat_sessions", JSON.stringify([defaultSession]));
     setConfirmClear(false);
+  };
+
+  const handleCopyMessage = async (msgId: string, text: string) => {
+    try {
+      const clean = text
+        .replace(/^#{1,6}\s*(.+)$/gm, '$1')
+        .replace(/\*{1,3}([^*]+)\*{1,3}/g, '$1')
+        .replace(/^\s*\*\s+/gm, '• ')
+        .replace(/`([^`]+)`/g, '$1')
+        .replace(/[*#`]/g, '')
+        .trim();
+      await navigator.clipboard.writeText(clean);
+      setCopiedMsgId(msgId);
+      setTimeout(() => setCopiedMsgId(null), 2000);
+    } catch (e) {
+      console.error("Failed to copy:", e);
+    }
   };
 
   const handleSend = async (text: string) => {
@@ -384,30 +535,75 @@ export default function AIAdviserPage() {
                   )}
                 </div>
 
-                <div className={`max-w-[92%] sm:max-w-[80%] rounded-xl p-3 sm:p-4 space-y-2 ${
+                <div className={`max-w-[92%] sm:max-w-[85%] rounded-xl p-3.5 sm:p-4.5 space-y-2.5 ${
                   m.role === "user" 
                     ? "bg-cyber-teal/10 text-slate-100 border border-cyber-teal/30" 
-                    : "bg-cyber-dark/45 text-slate-300 border border-cyber-border/80"
+                    : "bg-cyber-dark/60 text-slate-200 border border-cyber-border/80 shadow-[0_4px_20px_rgba(0,0,0,0.3)]"
                 }`}>
-                  <p className="text-xs leading-relaxed font-sans whitespace-pre-wrap">{m.role === "user" ? m.query : m.response}</p>
-                  
-                  {/* Citations block */}
-                  {m.citation && (
-                    <div className="pt-3 border-t border-cyber-border/40 mt-3 font-mono text-[10px] space-y-1.5 text-slate-400">
-                      <div className="flex items-center gap-1.5 font-bold text-cyber-gold">
-                        <span className="p-0.5 rounded bg-cyber-gold/10 border border-cyber-gold/25 flex items-center justify-center">
-                          <Sparkles className="w-3 h-3 text-cyber-gold" />
-                        </span>
-                        <span>INTELLIGENCE SOURCE REFERENCES:</span>
-                      </div>
-                      {m.citation.contracts.length > 0 && (
-                        <div className="pl-5">
-                          <strong>Exposed Contracts:</strong> {m.citation.contracts.join(", ")}
+                  {m.role === "user" ? (
+                    <p className="text-xs leading-relaxed font-sans text-white">{m.query}</p>
+                  ) : (
+                    <div>
+                      {/* Assistant Header & Copy Action */}
+                      <div className="flex items-center justify-between pb-2 mb-2.5 border-b border-cyber-border/40">
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] font-mono font-bold tracking-wider text-cyber-teal-light uppercase flex items-center gap-1.5">
+                            <span className="w-1.5 h-1.5 rounded-full bg-cyber-teal-light animate-pulse"></span>
+                            CAG Audit Intelligence
+                          </span>
+                          <span className="text-[9px] font-mono text-slate-500">• {new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                         </div>
-                      )}
-                      {m.citation.files.length > 0 && (
-                        <div className="pl-5">
-                          <strong>Reference Material:</strong> {m.citation.files.join(", ")}
+                        <button
+                          onClick={() => handleCopyMessage(m.id, m.response)}
+                          className="px-2 py-1 rounded bg-cyber-card hover:bg-cyber-card-hover border border-cyber-border text-slate-400 hover:text-white text-[10px] font-mono flex items-center gap-1.5 transition-colors cursor-pointer"
+                          title="Copy clean advisory to clipboard"
+                        >
+                          {copiedMsgId === m.id ? (
+                            <>
+                              <Check className="w-3 h-3 text-emerald-400 animate-pulse" />
+                              <span className="text-emerald-400 font-semibold">Copied!</span>
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="w-3 h-3 text-slate-400" />
+                              <span>Copy Advisory</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+
+                      {/* Clean Executive Content */}
+                      <FormattedAIResponse text={m.response} />
+
+                      {/* Citations Block */}
+                      {m.citation && (m.citation.contracts.length > 0 || m.citation.files.length > 0) && (
+                        <div className="pt-3 border-t border-cyber-border/40 mt-3.5 font-mono text-[10px] space-y-2">
+                          <div className="flex items-center gap-1.5 font-bold text-cyber-gold">
+                            <span className="p-0.5 rounded bg-cyber-gold/10 border border-cyber-gold/25 flex items-center justify-center">
+                              <Sparkles className="w-3 h-3 text-cyber-gold" />
+                            </span>
+                            <span className="tracking-wide">RAG EVIDENCE CITATIONS:</span>
+                          </div>
+                          {m.citation.contracts.length > 0 && (
+                            <div className="flex flex-wrap items-center gap-1.5 pl-4">
+                              <span className="text-slate-400 text-[10px]">Tenders:</span>
+                              {m.citation.contracts.map((cid, cidx) => (
+                                <span key={cidx} className="px-1.5 py-0.5 rounded bg-cyber-teal/15 text-cyber-teal-light border border-cyber-teal-light/25 font-semibold text-[10px]">
+                                  {cid}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                          {m.citation.files.length > 0 && (
+                            <div className="flex flex-wrap items-center gap-1.5 pl-4">
+                              <span className="text-slate-400 text-[10px]">Ingested Files:</span>
+                              {m.citation.files.map((fid, fidx) => (
+                                <span key={fidx} className="px-1.5 py-0.5 rounded bg-slate-900/80 text-slate-300 border border-slate-750 text-[10px]">
+                                  {fid}
+                                </span>
+                              ))}
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>
