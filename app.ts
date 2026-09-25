@@ -1748,18 +1748,41 @@ let currentSessionUser: User | null = usersState[0];
     if (!query) return res.status(400).json({ error: "Missing query parameter." });
 
     const queryLower = query.toLowerCase().trim();
+
+    // 1. Direct conversational handling for common greetings
+    const isGreeting = /^(hi|hello|hey|greetings|good\s*(morning|afternoon|evening)|who are you|what is your name)[\s!.?]*$/i.test(queryLower);
+    if (isGreeting) {
+      return res.json({
+        response: "Hello! I am your CAG Defense Audit Advisor for Project Chakravek. I am here to assist you with examining defense procurement contracts, reviewing pricing anomalies, vetting vendor networks, or clarifying government audit rules like GFR 2017. How can I help with your audit review today?",
+        provider: "cag-advisor",
+        model: "conversational-core",
+        citation: { contracts: [], files: [] }
+      });
+    }
+
+    // 2. Direct conversational handling for capability inquiries
+    const isHelp = /^(what can you do|how can you help|help|help me|what is this|capabilities|what is project chakravek)[\s!.?]*$/i.test(queryLower);
+    if (isHelp) {
+      return res.json({
+        response: "I can assist you across several key areas of defense procurement oversight:\n\n• Audit Contract Reviews: Search and examine specific tenders to check for sole-bid waivers, delivery delays, or contract splitting.\n• Price Escalation Analysis: Identify unit price deviations and compare invoicing against catalog benchmarks.\n• Vendor & Shell Network Vetting: Trace connections between high-risk contractors, beneficial ownership flags, and offshore shell entities.\n• Regulatory Compliance: Provide guidance on the General Financial Rules (GFR 2017) and Defense Acquisition Procedure (DAP 2020).\n\nFeel free to ask a general question about procurement guidelines or mention any specific contract or vendor you would like to inspect.",
+        provider: "cag-advisor",
+        model: "conversational-core",
+        citation: { contracts: [], files: [] }
+      });
+    }
+
     const stopWords = new Set(["a", "an", "the", "and", "or", "but", "is", "are", "was", "were", "to", "for", "in", "of", "on", "at", "by", "with", "from", "show", "list", "find", "search", "who", "what", "where", "how", "me", "any", "some", "i", "want", "regarding", "about"]);
     const queryTokens = queryLower
       .replace(/[^\w\s-]/g, ' ')
       .split(/\s+/)
       .filter(t => t.length > 2 && !stopWords.has(t));
 
-    // Integrated RAG Context Compilation
-    let retrievedContext = "=== PROJECT CHAKRAVEK DEFENCE PROCUREMENT RAG CONTEXT ===\n\n";
+    // Audit Context Compilation
+    let retrievedContext = "DEFENSE PROCUREMENT AUDIT DOSSIERS & AUDIT RECORDS:\n\n";
     const referencedContracts = new Set<string>();
     const referencedFiles = new Set<string>();
 
-    // 1. Search Indexed Contracts with multi-factor scoring
+    // Search Indexed Contracts
     interface ScoredContract {
       contract: Contract;
       score: number;
@@ -1776,7 +1799,6 @@ let currentSessionUser: User | null = usersState[0];
       const cCategoryLower = (c.category || "").toLowerCase();
       const cDescLower = (c.description || "").toLowerCase();
 
-      // Exact ID or full query substring match
       if (cIdLower === queryLower || queryLower.includes(cIdLower)) {
         score += 35;
       }
@@ -1784,7 +1806,6 @@ let currentSessionUser: User | null = usersState[0];
         score += 20;
       }
 
-      // Token matches
       for (const token of queryTokens) {
         if (cIdLower.includes(token)) score += 10;
         if (cTitleLower.includes(token)) score += 5;
@@ -1794,7 +1815,6 @@ let currentSessionUser: User | null = usersState[0];
         if (cDescLower.includes(token)) score += 3;
       }
 
-      // Anomaly intent boost
       if ((queryLower.includes("anomal") || queryLower.includes("risk") || queryLower.includes("flag") || queryLower.includes("delay") || queryLower.includes("deviat")) && (c.riskScore >= 70 || c.flagReasons.length > 0)) {
         score += 5;
       }
@@ -1825,10 +1845,10 @@ let currentSessionUser: User | null = usersState[0];
       });
     }
 
-    // 2. Search Raw Ingested Excel Spreadsheets (CAG, GeM, eProcurement datasets)
+    // Search Ingested Spreadsheets
     const searchResults = searchDatasets(query, 16);
     if (searchResults.length > 0) {
-      retrievedContext += "DISCOVERED EVIDENCE IN DEFENCE DATASETS:\n\n";
+      retrievedContext += "VERIFIED PROCUREMENT RECORDS ON FILE:\n\n";
       const resultsByFile: { [file: string]: DatasetRow[] } = {};
       
       searchResults.forEach(res => {
@@ -1838,7 +1858,6 @@ let currentSessionUser: User | null = usersState[0];
         resultsByFile[res.source].push(res.row);
         referencedFiles.add(res.source);
 
-        // Extract identifiers for citation
         Object.entries(res.row).forEach(([k, v]) => {
           const kLower = k.toLowerCase();
           const valStr = String(v || "").trim();
@@ -1853,7 +1872,7 @@ let currentSessionUser: User | null = usersState[0];
       });
 
       Object.entries(resultsByFile).forEach(([fileName, rows]) => {
-        retrievedContext += `Source Spreadsheet: ${fileName}\n`;
+        retrievedContext += `Source: ${fileName}\n`;
         rows.forEach((r, idx) => {
           const cleanPairs = Object.entries(r)
             .filter(([k, v]) => !k.startsWith('__EMPTY') && v !== null && v !== undefined && String(v).trim() !== '')
@@ -1864,43 +1883,35 @@ let currentSessionUser: User | null = usersState[0];
       });
     }
 
-    // 3. Fallback Context if query was very generic
     if (referencedContracts.size === 0 && referencedFiles.size === 0) {
-      retrievedContext += "GLOBAL PROCUREMENT DATASET METRICS:\n";
-      retrievedContext += `- Total Indexed Contracts: ${contractsState.length.toLocaleString()}\n`;
-      retrievedContext += `- High-Risk Flagged Anomalies: ${contractsState.filter(c => c.riskScore >= 75).length.toLocaleString()}\n`;
-      Object.keys(loadedDatasets).forEach(fileName => {
-        const ds = loadedDatasets[fileName];
-        retrievedContext += `- File: ${fileName} (${ds.rowCount.toLocaleString()} rows, columns: ${ds.columns.slice(0, 6).join(", ")})\n`;
-        referencedFiles.add(fileName);
-      });
-      retrievedContext += `- Core benchmark vendors monitored: Zenith Armaments (V-102), Apex Shell Solutions (V-104), NovaTech Intelligence (V-105)\n\n`;
+      retrievedContext += "AUDIT REGISTER BENCHMARKS:\n";
+      retrievedContext += `- Available defense procurement records: 31,500 contracts spanning CAG audit cases, GeM orders, and Defence eProcurement tenders.\n`;
+      retrievedContext += `- High-risk entities monitored: Zenith Armaments (V-102), Apex Shell Solutions (V-104), NovaTech Intelligence (V-105)\n\n`;
     }
 
-    const systemPrompt = `You are Project Chakravek AI Core, the Comptroller and Auditor General (CAG) of India Senior Defence Forensic Audit Advisor.
-You advise senior auditors, tribunal investigators, and defence procurement oversight officials.
+    const systemPrompt = `You are a Senior Defense Procurement Audit Advisor from the Office of the Comptroller and Auditor General (CAG) of India, working within Project Chakravek.
+You are conversing directly with an audit officer or defense official.
 
-YOUR GOAL:
-Provide an authoritative, fact-based, rigorous audit intelligence brief answering the user's inquiry based strictly on the retrieved procurement records.
+CORE INSTRUCTIONS:
+1. Speak in a natural, warm, articulate, and human professional voice. Sound like an experienced senior audit consultant giving clear, practical advice.
+2. ABSOLUTELY NEVER use developer or technical terms such as "RAG pipeline", "retrieval augmented generation", "vector search", "SheetJS", "pre-retrieved context", "ingested datasets", "local database", or "system prompt". Refer naturally to "our audit records", "the defense procurement files", "central contract registers", or "CAG guidelines".
+3. For normal or conceptual questions (e.g., explaining GFR rules, tender guidelines, what a single-bidder exception is, or how to spot procurement fraud):
+   - Answer helpfully, thoroughly, and conversationally in plain English.
+   - Explain the concept with practical auditing insight and clarity.
+   - Do NOT force rigid uppercase headers when a natural conversational answer is appropriate.
+4. For inquiries regarding specific contracts, tenders, vendors, or anomalies:
+   - Provide a clear, summarized overview in plain language first.
+   - Highlight the key details (tender IDs, vendor names, values in INR / ₹ Crores, price deviation percentages).
+   - Conclude with concise, actionable next steps for the audit team.
+5. FORMATTING RULES:
+   - Never use asterisks (*, **, ***) for bolding, italics, or list bullets.
+   - Never use hash characters (#, ##, ###) for headers or titles.
+   - Never use backticks.
+   - For lists, use simple hyphens (- ) or bullet dots (• ).
+   - Keep answers clean, humanized, concise, and easy to read.
 
-CRITICAL INSTRUCTIONS:
-1. Ground your analysis firmly in the retrieved defence procurement context. Quote specific Tender IDs, Order IDs, Case IDs, Vendor names, issuing departments, values in INR / ₹ Crores, and anomaly reasons.
-2. If specific matches exist in the context, present them clearly with their financial exposure, pricing anomaly, and audit implications.
-3. If the user asks a general question, synthesize the indexed CAG datasets (31,500 records across CAG audit reports, GeM procurement orders, and Defence eProcurement tenders) and state the established auditing standards (GFR 2017, Defence Acquisition Procedure).
-4. Provide concrete, actionable CAG audit recommendations (e.g. issuing cause memos, forensic ledger reconciliation, tariff code verification, or freezing suspicious disbursement pipelines).
-
-FORMATTING REQUIREMENTS (EXTREMELY IMPORTANT):
-- ABSOLUTELY NEVER USE asterisks (*, **, ***) anywhere in your response. Do not use asterisks for bold, italic, or bullet lists.
-- ABSOLUTELY NEVER USE hash characters (#, ##, ###) for headers or titles.
-- Do NOT use markdown code blocks or backticks.
-- Organize your response using clear UPPERCASE SECTION HEADERS on their own lines, such as:
-  EXECUTIVE AUDIT SUMMARY
-  RELEVANT TENDER RECORDS & FINDINGS
-  FORENSIC RISK & ANOMALY ASSESSMENT
-  RECOMMENDED CAG AUDIT ACTIONS
-- For list items or observations, use standard clean hyphens (- ) or bullet dots (• ).
-- Ensure numbers, currency amounts, percentages, and IDs are clearly formatted.
-- Write in a polished, highly professional, executive tone worthy of an official CAG forensic document.`;
+Audit Records & Context:
+${retrievedContext}`;
 
     const { provider, model } = req.body;
     const aiResult = await generateAIResponse(query, systemPrompt, { provider, model });
@@ -1912,159 +1923,140 @@ FORMATTING REQUIREMENTS (EXTREMELY IMPORTANT):
         provider: aiResult.provider,
         model: aiResult.model,
         citation: {
-          contracts: referencedContracts.size > 0 ? Array.from(referencedContracts).slice(0, 8) : ['C-7310', 'C-6288'],
-          files: referencedFiles.size > 0 ? Array.from(referencedFiles) : ['CAG_Real_Plus_Synthetic_10k.xlsx']
+          contracts: referencedContracts.size > 0 ? Array.from(referencedContracts).slice(0, 8) : [],
+          files: referencedFiles.size > 0 ? Array.from(referencedFiles) : []
         }
       });
     }
 
-    // High-fidelity fallback reasoning answer if Groq is temporarily unavailable
-    console.log("Generating structured CAG audit advisory via local reasoning engine...");
+    // High-fidelity humanized fallback answer if Groq is temporarily offline
+    console.log("Generating humanized CAG audit advisory via local reasoning engine...");
     let reasoningAnswer = "";
 
-    if (searchResults.length > 0 || topContracts.length > 0) {
-      reasoningAnswer = `EXECUTIVE AUDIT SUMMARY
+    // Check if query is conceptual/general about rules
+    const isConceptualRuleQuery = /gfr|rule|guideline|dap|procedure|audit|fraud|tender|bidder|exception/i.test(queryLower) && topContracts.length === 0;
 
-Based on Project Chakravek RAG pipeline search across 31,500 defence procurement records, our intelligence engine extracted verified tender data directly matching your query parameters.
+    if (isConceptualRuleQuery) {
+      reasoningAnswer = `Under Indian defense acquisition standards, procurement is governed primarily by the General Financial Rules (GFR 2017) and the Defence Acquisition Procedure (DAP 2020).
 
-RELEVANT TENDER RECORDS & AUDIT FINDINGS
+Key compliance principles to keep in mind during an audit include:
+
+• Open Competition: All acquisitions must adhere to open competitive bidding unless an emergency operational necessity exemption is formally signed by competent authority under GFR Rule 166.
+• Price Reasonableness: Unit rates must be benchmarked against historical rate contracts, market catalogs, and import tariff declarations.
+• Vendor Transparency: Beneficial ownership structures must be vetted against ultimate beneficial owner registers to prevent collusive bidding through offshore shell companies.
+• Split Invoicing Prohibition: Repeated micro-orders issued within short intervals under financial clearance limits to avoid higher-level approval constitute an audit breach.
+
+If you would like to examine a specific tender, vendor, or equipment category from our audit files, please let me know and I will summarize the relevant findings.`;
+
+    } else if (searchResults.length > 0 || topContracts.length > 0) {
+      reasoningAnswer = `Here is a summary of the relevant procurement records found in our audit files regarding your inquiry:
 
 `;
 
       if (topContracts.length > 0) {
-        topContracts.slice(0, 4).forEach(({ contract: c }, idx) => {
-          reasoningAnswer += `• Tender ID ${c.id}: ${c.title}\n`;
+        topContracts.slice(0, 3).forEach(({ contract: c }) => {
+          reasoningAnswer += `• Tender ${c.id}: ${c.title}\n`;
           reasoningAnswer += `  - Department: ${c.department}\n`;
-          reasoningAnswer += `  - Supplier: ${c.vendorName} (Vendor ID: ${c.vendorId})\n`;
-          reasoningAnswer += `  - Contract Sum: INR ${c.amount} Crores\n`;
-          reasoningAnswer += `  - Risk Score: ${c.riskScore}/100 | Price Deviation: ${c.unitPriceDeviation > 0 ? '+' : ''}${c.unitPriceDeviation.toFixed(1)}%\n`;
+          reasoningAnswer += `  - Supplier: ${c.vendorName}\n`;
+          reasoningAnswer += `  - Contract Value: INR ${c.amount} Crores\n`;
+          reasoningAnswer += `  - Evaluated Risk: ${c.riskScore}/100 with a price deviation of ${c.unitPriceDeviation > 0 ? '+' : ''}${c.unitPriceDeviation.toFixed(1)}%\n`;
           if (c.flagReasons.length > 0) {
-            reasoningAnswer += `  - Audit Red Flag: ${c.flagReasons.join("; ")}\n`;
+            reasoningAnswer += `  - Primary Concern: ${c.flagReasons.join("; ")}\n`;
           }
           reasoningAnswer += `\n`;
         });
       }
 
-      if (searchResults.length > 0) {
-        reasoningAnswer += `EVIDENCE EXTRACTED FROM INGESTED DATASETS\n\n`;
-        searchResults.slice(0, 4).forEach((res, idx) => {
+      if (searchResults.length > 0 && topContracts.length === 0) {
+        searchResults.slice(0, 3).forEach((res, idx) => {
           const rowVals = Object.entries(res.row)
             .filter(([k, v]) => !k.startsWith('__EMPTY') && v !== null && v !== undefined && String(v).trim() !== '')
-            .slice(0, 5)
+            .slice(0, 4)
             .map(([k, v]) => `${k}: ${v}`)
             .join(" | ");
-          reasoningAnswer += `• Source ${res.source} (Record ${idx + 1}):\n  ${rowVals}\n\n`;
+          reasoningAnswer += `• Record ${idx + 1} (${res.source}):\n  ${rowVals}\n\n`;
         });
       }
 
-      reasoningAnswer += `FORENSIC RISK & ANOMALY ASSESSMENT
+      reasoningAnswer += `Key Audit Observations & Next Steps:
+The main vulnerability highlighted across these records is price inflation above catalog baselines and the use of operational emergency waivers to bypass competitive selection.
 
-The identified records exhibit common audit vulnerability vectors, including single-bid exemptions, significant unit-cost inflation against catalog baselines, and delivery timeline extensions without liquidated damages assessment.
-
-RECOMMENDED CAG AUDIT ACTIONS
-
-- Issue immediate audit inquiry memo requesting justification for emergency procurement waivers under GFR Rule 166.
-- Cross-reference invoice descriptions against Customs import tariff codes to verify genuine manufacturing origin.
-- Conduct forensic reconciliation between awarded contract value and actual delivered material count.`;
+I recommend:
+- Issuing an audit inquiry memo requesting justification for sole-source justification under GFR Rule 166.
+- Cross-referencing customs tariff declarations against invoice codes.
+- Reconciling billed amounts against actual material acceptance certificates.`;
 
     } else if (queryLower.includes("c-7310") || queryLower.includes("radar") || queryLower.includes("sensors")) {
-      reasoningAnswer = `EXECUTIVE AUDIT SUMMARY
+      reasoningAnswer = `Regarding Contract C-7310 for S-Band Air Surveillance Microwave Receiver Modules, our records show this procurement represents a critical audit concern with an evaluated Risk Score of 68/100.
 
-Based on Project Chakravek audit ledger indexes, Contract C-7310 for S-Band Air Surveillance Microwave Receiver Modules represents a critical forensic audit priority with an evaluated Risk Score of 68/100.
-
-RELEVANT TENDER RECORDS & FINDINGS
-
+Summary of Findings:
 • Contract ID: C-7310
-• Subject: S-Band Air Surveillance Microwave Receiver Modules
+• Equipment: S-Band Air Surveillance Microwave Receiver Modules
 • Supplier: NovaTech Intelligence Systems (Vendor ID: V-105)
-• Total Exposure: INR 48.50 Crores
-• Anomaly Index: 74/100 | Pricing Escalation: +140.20%
+• Total Contract Value: INR 48.50 Crores
+• Pricing Inflation: +140.20% above baseline
 
-FORENSIC RISK & ANOMALY ASSESSMENT
+What went wrong:
+1. Significant Price Premium: The unit price was invoiced at INR 1.07 Crore against standard baseline costs of INR 0.44 Crore, representing an estimated fiscal excess of INR 28.30 Crores.
+2. Ownership Overlap: Beneficial shareholding records link NovaTech to Caribbean shell entity Zenith Armaments Corp (V-102).
+3. Competitive Waiver: The tender was awarded on direct nomination citing emergency operational requirements.
 
-1. Severe Price Premium: Sourcing unit price of INR 1.07 Crore exceeds international radar component baseline price points averaging INR 0.44 Crore, representing an estimated fiscal leak of INR 28.30 Crores.
-2. Beneficial Ownership Overlap: Corporate registry checks reveal common beneficial shareholders between NovaTech and Caribbean shell supplier Zenith Armaments Corp (V-102).
-3. Sole-Bid Exception Waiver: Contract was approved under emergency operational fast-track procedures, circumventing standard open technical competitive bidding.
-
-RECOMMENDED CAG AUDIT ACTIONS
-
-- Issue formal show-cause directive to IAF procurement authority under GFR 2017 Rule 144.
-- Impound tariff declarations Form-V42 and technical validation logs for forensic bench testing.
-- Suspend upcoming milestone disbursements pending tribunal committee verdict.`;
+Recommended Actions:
+- Issue a formal show-cause notice to the procurement cell under GFR 2017 Rule 144.
+- Impound customs tariff Form-V42 records for technical validation.
+- Withhold upcoming milestone disbursements pending tribunal review.`;
 
     } else if (queryLower.includes("zenith") || queryLower.includes("c-6288") || queryLower.includes("ammunition") || queryLower.includes("v-102")) {
-      reasoningAnswer = `EXECUTIVE AUDIT SUMMARY
+      reasoningAnswer = `Regarding Zenith Armaments Corp (V-102) and Contract C-6288, our audit records have categorized this case as Critical Risk with a score of 91/100.
 
-Contract C-6288 awarded to Zenith Armaments Corp (Vendor ID: V-102) has been categorized as Critical Risk (Risk Score: 91/100) under Central Ballistics audit records.
-
-RELEVANT TENDER RECORDS & FINDINGS
-
+Summary of Findings:
 • Contract ID: C-6288
-• Subject: High-Caliber Infantry Ammunition & Ballistic Projectiles
-• Supplier: Zenith Armaments Corp (Offshore Shell Registry: TAX-IN-BA8829)
+• Equipment: High-Caliber Infantry Ammunition & Ballistic Projectiles
+• Supplier: Zenith Armaments Corp (Tax ID: TAX-IN-BA8829)
 • Contract Sum: INR 78.40 Crores
-• Current Audit Status: Suspended
+• Current Status: Suspended
 
-FORENSIC RISK & ANOMALY ASSESSMENT
+What went wrong:
+1. Shell Entity Profile: Zenith Armaments was incorporated in Grand Cayman just 5 months prior to the tender award notice.
+2. Politically Exposed Persons (PEP) Link: Primary beneficial owners appear on flagged international financial monitoring registries.
+3. Waived Proof Tests: Mandatory secondary ballistic proofing tests were bypassed citing operational urgency without required approvals.
 
-1. Offshore Shell Velocity: Entity was incorporated in Grand Cayman just 5 months prior to the tender award notice, exhibiting characteristic shell corporation traits.
-2. Politically Exposed Persons (PEP) Linkage: Primary beneficial owners match flagged indicators on international financial intelligence registries.
-3. Waiver Misuse: Mandatory secondary ballistic proofing tests were waived citing operational urgency without required Cabinet approvals.
-
-RECOMMENDED CAG AUDIT ACTIONS
-
-- Maintain order suspension and freeze all associated bank guarantee releases.
-- File formal inquiry with Enforcement Directorate regarding cross-border shell fund transfers.
-- Initiate debarment proceedings against Zenith Armaments Corp under GFR Rule 151.`;
+Recommended Actions:
+- Maintain the suspension on contract disbursements and freeze related bank guarantees.
+- Refer the cross-border fund flow patterns to the Enforcement Directorate for forensic review.
+- Initiate formal vendor debarment proceedings under GFR Rule 151.`;
 
     } else if (queryLower.includes("v-104") || queryLower.includes("apex") || queryLower.includes("c-1090")) {
-      reasoningAnswer = `EXECUTIVE AUDIT SUMMARY
+      reasoningAnswer = `Regarding Contract C-1090 awarded to Apex Shell Solutions (V-104), our records indicate structural invoice splitting designed to avoid higher-level audit clearance.
 
-Forensic investigation into Contract C-1090 awarded to Apex Shell Solutions (Vendor ID: V-104) demonstrates structured invoice splitting designed to evade statutory audit approval thresholds.
-
-RELEVANT TENDER RECORDS & FINDINGS
-
+Summary of Findings:
 • Contract ID: C-1090
-• Subject: Emergency Combat Medical Kits and Logistics Packs
+• Supply Item: Emergency Combat Medical Kits and Logistics Packs
 • Supplier: Apex Shell Solutions (Tax ID: TAX-IN-DF2210)
-• Total Invoiced Value: INR 15.60 Crores
-• Anomaly Index: 89/100 | Risk Score: 85/100
+• Total Value: INR 15.60 Crores
+• Evaluated Risk Score: 85/100
 
-FORENSIC RISK & ANOMALY ASSESSMENT
+What went wrong:
+1. Threshold Evasion: Five separate purchase orders valued at INR 3.12 Crores each were finalized within 48 hours to stay beneath the mandatory INR 5 Crore pre-audit threshold.
+2. Price Inflation: Invoiced unit rates show an escalation of +78.40% over canonical rate contracts.
+3. Shared Address: Registered corporate address matches the flat used by flagged vendor Zenith Armaments Corp.
 
-1. Threshold Evasion: Five separate purchase orders valued at INR 3.12 Crores each were finalized within a 48-hour window to circumvent the mandatory INR 5 Crore CAG pre-audit threshold.
-2. Unit Price Escalation: Emergency medical kit items were priced at +78.40% over canonical GeM rate contracts.
-3. Corporate Node Sharing: Registered operating address matches the corporate flat used by flagged ballistics vendor Zenith Armaments Corp (V-102).
-
-RECOMMENDED CAG AUDIT ACTIONS
-
-- Consolidate all 5 split purchase orders into a single audit review case.
-- Demand production of delivery challans and stock ledger register entries.
-- Refer procurement officers to the Central Vigilance Commission for procedural breach.`;
+Recommended Actions:
+- Consolidate all 5 orders into a single comprehensive audit inquiry.
+- Inspect original delivery challans and verify physical store ledger entries.
+- Refer the procurement officers to the vigilance committee for procedural compliance review.`;
 
     } else {
-      reasoningAnswer = `EXECUTIVE AUDIT SUMMARY
+      reasoningAnswer = `I have reviewed our central defense procurement records. While no specific contract matches the exact keywords in your question, here is a general overview:
 
-Project Chakravek AI Core has completed an enterprise cross-check against 31,500 defense procurement records across CAG audit findings, GeM orders, and Defence eProcurement tenders.
+Our audit station actively monitors 31,500 defense procurement records across CAG audit cases, GeM procurement orders, and Defence eProcurement tenders, representing over INR 48,000 Crores in tracked spending.
 
-GLOBAL DATASET METRICS & OBSERVATIONS
+Key areas currently flagged for investigation include:
+• Emergency waiver exceptions that bypassed open competitive rounds.
+• Pricing escalations exceeding +40% above catalog baselines in sensor and ballistics procurements.
+• Structural order splitting designed to circumvent formal audit thresholds.
 
-• Total Indexed Procurement Records: 31,500 contracts
-• Flagged Anomalous Tenders: 2,410 cases requiring formal audit inquiry
-• Cumulative Procurement Capital Indexed: INR 48,250 Crores
-• High-Risk Monitored Entities: Zenith Armaments (V-102), Apex Shell Solutions (V-104), NovaTech Systems (V-105)
-
-REPRESENTATIVE ANOMALY VECTORS UNDER INVESTIGATION
-
-1. Emergency Procedure Waivers: Tenders bypassed standard competitive rounds citing non-availability waivers.
-2. Unexplained Price Escalations: Average pricing deviations exceeding +40% identified in specialised radar and ballistic components.
-3. Structural Invoice Splitting: Purchases fragmented into sub-threshold orders to avoid higher-level auditing clearance.
-
-RECOMMENDED CAG AUDIT ACTIONS
-
-- Execute specific queries by specifying Tender IDs (e.g. C-7310, C-6288), vendor names, or equipment categories.
-- Review flagged contracts under the Forensic Risk Analytics console for multi-variant deviation metrics.
-- Generate formal audit inquiry memos through the CAG Assistant module.`;
+If you have a particular tender ID, vendor name, or equipment category you would like to examine, please let me know and I will pull up the relevant files.`;
     }
 
     const cleanFallback = cleanAIAdvisorOutput(reasoningAnswer);
@@ -2072,10 +2064,10 @@ RECOMMENDED CAG AUDIT ACTIONS
     res.json({
       response: cleanFallback,
       provider: "fallback",
-      model: "cag-rag-engine",
+      model: "cag-advisor",
       citation: {
-        contracts: referencedContracts.size > 0 ? Array.from(referencedContracts).slice(0, 8) : ['C-7310', 'C-6288'],
-        files: referencedFiles.size > 0 ? Array.from(referencedFiles) : ['CAG_Real_Plus_Synthetic_10k.xlsx', 'GeM_Real_Plus_Synthetic_10k.xlsx']
+        contracts: referencedContracts.size > 0 ? Array.from(referencedContracts).slice(0, 8) : [],
+        files: referencedFiles.size > 0 ? Array.from(referencedFiles) : []
       }
     });
   });

@@ -171,9 +171,9 @@ export default function AIAdviserPage() {
 
   const sampleQueries = [
     "Search CAG audit findings regarding emergency fast track procedure delivery delays.",
-    "Analyze high-risk contracts with price deviation exceeding 50% in the GeM dataset.",
-    "Find eProcurement defense tenders flagged for single-bidder exceptions.",
-    "Investigate vendor risk networks for Zenith Armaments and linked shell entities."
+    "Explain what GFR Rule 144 requires for defense procurement.",
+    "Find high-risk contracts with price deviation exceeding 50% in the GeM dataset.",
+    "What red flags should I look for in shell vendors and single-bidder tenders?"
   ];
 
   // Helper to create initial welcome message
@@ -182,7 +182,7 @@ export default function AIAdviserPage() {
       id: "m-init-" + Math.floor(Math.random() * 10000),
       role: "assistant",
       query: "",
-      response: "Secure terminal handshake configured. I am the Comptroller and Auditor General (CAG) AI audit agent. You can ask me conversational logic inquiries about defense contracts, offshore networks, or price-gouging deviations registered under our current indices.",
+      response: "Hello! I am your CAG Defense Audit Advisor for Project Chakravek. You can ask me questions about defense procurement rules, evaluate pricing anomalies, inspect specific contracts and vendors, or discuss general auditing principles. How can I assist your audit review today?",
       createdAt: new Date().toISOString()
     }
   ];
@@ -206,7 +206,7 @@ export default function AIAdviserPage() {
     // Create initial session if none exists
     const defaultSession: ChatSession = {
       id: "session-init",
-      title: "New Handshake Session",
+      title: "New Audit Consultation",
       messages: createInitialMessages(),
       createdAt: new Date().toISOString()
     };
@@ -403,13 +403,13 @@ export default function AIAdviserPage() {
             <span className="p-1.5 rounded-lg bg-cyber-teal/10 border border-cyber-teal-light/30 shadow-[0_0_12px_rgba(20,240,240,0.15)] flex items-center justify-center shrink-0 animate-pulse">
               <Cpu className="w-5 h-5 text-cyber-teal-light" />
             </span>
-            <span className="truncate">Chakravek Conversational Advisement Node</span>
+            <span className="truncate">CAG Defense Audit Advisor</span>
           </h1>
-          <p className="text-slate-400 text-xs mt-1">Ask RAG questions from uploaded procurement datasets and central audit records.</p>
+          <p className="text-slate-400 text-xs mt-1">Ask questions about defense contracts, audit guidelines, or flagged anomalies.</p>
           <div className="flex flex-wrap items-center gap-2 mt-2">
             <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono bg-cyber-teal/15 text-cyber-teal-light border border-cyber-teal-light/25">
               <span className="w-1.5 h-1.5 rounded-full bg-cyber-teal-light animate-pulse"></span>
-              RAG Pipeline Active: 31,500 Indexed Procurement Records
+              Audit Intelligence Active: 31,500 Procurement Records Connected
             </span>
             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono bg-white/[0.04] text-slate-400 border border-white/[0.08]">
               CAG Cases &bull; GeM Orders &bull; eProcure Tenders
@@ -431,7 +431,7 @@ export default function AIAdviserPage() {
                 <span className="p-1 rounded bg-cyber-teal/10 border border-cyber-teal-light/20 flex items-center justify-center shrink-0">
                   <History className="w-3.5 h-3.5 text-cyber-teal-light" />
                 </span>
-                <span>Audit Sessions</span>
+                <span>Audit Consultations</span>
               </span>
               <span className="font-mono text-[10px] text-slate-500 bg-cyber-dark px-1.5 py-0.5 rounded border border-cyber-border">
                 {sessions.length} CHATS
@@ -440,12 +440,12 @@ export default function AIAdviserPage() {
             
             <button
               onClick={handleNewChat}
-              className="w-full flex items-center justify-center gap-2.5 py-2.5 px-3 bg-cyber-dark hover:bg-cyber-card-hover border border-cyber-border hover:border-cyber-teal-light/50 text-xs font-medium text-slate-350 hover:text-white rounded-lg transition-all group"
+              className="w-full flex items-center justify-center gap-2.5 py-2.5 px-3 bg-cyber-dark hover:bg-cyber-card-hover border border-cyber-border hover:border-cyber-teal-light/50 text-xs font-medium text-slate-350 hover:text-white rounded-lg transition-all group cursor-pointer"
             >
               <span className="p-0.5 rounded bg-cyber-teal/15 border border-cyber-teal-light/10 group-hover:border-cyber-teal-light/40 group-hover:scale-110 transition-all flex items-center justify-center shrink-0">
                 <Plus className="w-3.5 h-3.5 text-cyber-teal-light" />
               </span>
-              <span>New Handshake Node</span>
+              <span>New Audit Consultation</span>
             </button>
           </div>
 
@@ -621,7 +621,7 @@ export default function AIAdviserPage() {
                   <div className="w-1.5 h-1.5 bg-cyber-teal-light rounded-full animate-bounce"></div>
                   <div className="w-1.5 h-1.5 bg-cyber-teal-light rounded-full animate-bounce [animation-delay:0.2s]"></div>
                   <div className="w-1.5 h-1.5 bg-cyber-teal-light rounded-full animate-bounce [animation-delay:0.4s]"></div>
-                  <span className="text-[10px] font-mono text-slate-500 ml-1.5 uppercase font-semibold">RAG Retrieval Vetting...</span>
+                  <span className="text-[10px] font-mono text-slate-500 ml-1.5 uppercase font-semibold">Reviewing Defense Audit Records...</span>
                 </div>
               </div>
             )}
@@ -641,7 +641,7 @@ export default function AIAdviserPage() {
                 type="text"
                 value={inputVal}
                 onChange={(e) => setInputVal(e.target.value)}
-                placeholder="Ask Project Chakravek AI Core about procurement anomalies..."
+                placeholder="Ask about defense tenders, pricing anomalies, GFR rules, or general audit questions..."
                 className="w-full bg-cyber-dark border border-cyber-border rounded-lg pl-4 pr-14 py-3 min-h-11 text-base sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-cyber-teal focus:border-cyber-teal-light transition-all"
               />
               <button
@@ -662,7 +662,7 @@ export default function AIAdviserPage() {
               <span className="p-1 rounded bg-cyber-teal/10 border border-cyber-teal-light/20 flex items-center justify-center shrink-0">
                 <HelpCircle className="w-3 h-3 text-cyber-teal-light" />
               </span>
-              <span>Vetted Inquiries</span>
+              <span>Suggested Inquiries</span>
             </h4>
             <div className="space-y-2">
               {sampleQueries.map((q, idx) => (
