@@ -1173,7 +1173,7 @@ let currentSessionUser: User | null = usersState[0];
   app.get("/api/auth/google-url", async (req, res) => {
     const isConfigured = supabase !== null;
     if (!isConfigured) {
-      return res.json({ supabaseConfigured: false });
+      return res.json({ supabaseConfigured: false, googleEnabled: false });
     }
     try {
       const origin = req.headers.origin || (req.headers.referer ? new URL(req.headers.referer).origin : "http://localhost:3000");
@@ -1190,7 +1190,29 @@ let currentSessionUser: User | null = usersState[0];
         }
       });
       if (error) throw error;
-      res.json({ supabaseConfigured: true, url: data.url });
+
+      // Check whether Google Auth provider is enabled in Supabase project
+      let googleEnabled = true;
+      try {
+        const testRes = await fetch(data.url, { method: "GET", redirect: "manual" });
+        if (testRes.status === 400) {
+          const testBody = await testRes.text();
+          if (testBody.includes("provider is not enabled")) {
+            googleEnabled = false;
+          }
+        }
+      } catch (probeErr) {
+        // Fallback to active if probe cannot reach Supabase
+      }
+
+      res.json({
+        supabaseConfigured: true,
+        googleEnabled,
+        url: data.url,
+        redirectUri: redirectUrl,
+        supabaseCallbackUrl: `${supabaseUrl}/auth/v1/callback`,
+        dashboardUrl: `https://supabase.com/dashboard/project/syvifopjbdxqdmxoxnyi/auth/providers`
+      });
     } catch (err: any) {
       console.error("Failed to generate Supabase Google OAuth URL:", err);
       res.status(500).json({ error: err.message || "Failed to initiate secure OAuth" });
@@ -1423,9 +1445,19 @@ let currentSessionUser: User | null = usersState[0];
               return;
             }
 
-            // 3. Fallback or error
-            const errorDescription = queryParams.get('error_description') || 'Handshake rejected by authentication node.';
-            document.getElementById('status-msg').innerText = "Verification failed: " + errorDescription;
+            // 3. Fallback or error parameters
+            const errorParam = queryParams.get('error') || hashParams.get('error');
+            const errorDescription = queryParams.get('error_description') || hashParams.get('error_description') || (errorParam ? "OAuth error: " + errorParam : 'Handshake rejected by authentication node.');
+            if (window.opener) {
+              window.opener.postMessage({
+                type: 'SUPABASE_OAUTH_ERROR',
+                error: errorDescription
+              }, '*');
+              document.getElementById('status-msg').innerText = "Verification failed: " + errorDescription;
+              setTimeout(() => window.close(), 1500);
+            } else {
+              document.getElementById('status-msg').innerText = "Verification failed: " + errorDescription;
+            }
           }
           
           processAuth();

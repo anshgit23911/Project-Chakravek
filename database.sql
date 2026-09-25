@@ -66,7 +66,7 @@ ALTER TABLE public.contracts ENABLE ROW LEVEL SECURITY;
 -- 4. RISK SCORES BREAKDOWN TABLE
 CREATE TABLE IF NOT EXISTS public.risk_scores (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    contract_id VARCHAR(50) REFERENCES public.contracts(id) ON DELETE CASCADE,
+    contract_id VARCHAR(50) REFERENCES public.contracts(id) ON DELETE CASCADE UNIQUE,
     overall_risk INT DEFAULT 0,
     vendor_risk INT DEFAULT 0,
     direct_flag_risk INT DEFAULT 0,

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ShieldAlert, User, Lock, ArrowRight, CheckCircle2, ShieldCheck, Cpu } from "lucide-react";
+import { ShieldAlert, User, Lock, ArrowRight, CheckCircle2, ShieldCheck, Cpu, ExternalLink, Copy, Check, X, AlertTriangle, Sparkles } from "lucide-react";
 import { Component as SilkBackground } from "../components/ui/silk-background-animation";
 
 interface LoginPageProps {
@@ -48,6 +48,14 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
   const [ssoLoading, setSsoLoading] = useState<"google" | "microsoft" | null>(null);
   const [message, setMessage] = useState("");
   const [supabaseLive, setSupabaseLive] = useState(false);
+  const [showGoogleSetupModal, setShowGoogleSetupModal] = useState(false);
+  const [googleSetupInfo, setGoogleSetupInfo] = useState<{
+    url?: string;
+    supabaseCallbackUrl?: string;
+    dashboardUrl?: string;
+    redirectUri?: string;
+  } | null>(null);
+  const [copiedCallback, setCopiedCallback] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -72,6 +80,12 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
   useEffect(() => {
     const handleOauthMessage = async (event: MessageEvent) => {
       if (event.origin !== window.location.origin) return;
+
+      if (event.data?.type === 'SUPABASE_OAUTH_ERROR') {
+        setError(event.data.error || "Authentication handshake failed or was cancelled.");
+        setSsoLoading(null);
+        return;
+      }
 
       if (event.data?.type === 'SUPABASE_OAUTH_SUCCESS') {
         const { accessToken, user, provider } = event.data;
@@ -146,7 +160,7 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
     }
   };
 
-  const handleSsoLogin = async (provider: "google" | "microsoft") => {
+  const handleSsoLogin = async (provider: "google" | "microsoft", forceReal = false) => {
     setError("");
     setSsoLoading(provider);
 
@@ -164,6 +178,29 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
         }
 
         if (urlData.supabaseConfigured && urlData.url) {
+          // Check whether Google OAuth provider is activated on Supabase Dashboard
+          let isEnabled = urlData.googleEnabled;
+          if (isEnabled === undefined && provider === "google" && !forceReal) {
+            try {
+              const test = await fetch(urlData.url, { method: "GET", redirect: "manual" });
+              if (test.status === 400) {
+                const txt = await test.text();
+                if (txt.includes("provider is not enabled")) {
+                  isEnabled = false;
+                }
+              }
+            } catch (e) {
+              // ignore network probe errors
+            }
+          }
+
+          if (provider === "google" && isEnabled === false && !forceReal) {
+            setGoogleSetupInfo(urlData);
+            setShowGoogleSetupModal(true);
+            setSsoLoading(null);
+            return;
+          }
+
           const authWindow = window.open(
             urlData.url,
             `${provider}_oauth_popup`,
@@ -172,18 +209,38 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
           if (!authWindow) {
             throw new Error("Popup blocked. Please enable popups for this site to complete authentication.");
           }
-          // The window message event listener in useEffect will handle the session callback
+
+          // Monitor if popup window was closed by the user
+          const checkClosed = setInterval(() => {
+            if (!authWindow || authWindow.closed) {
+              clearInterval(checkClosed);
+              setSsoLoading((curr) => (curr === provider ? null : curr));
+            }
+          }, 600);
+
           return;
         }
       }
 
-      // Local mock simulation (or Microsoft Azure AD mock)
+      // Default demo login if no OAuth provider configured
+      await handleDemoSsoLogin(provider);
+    } catch (err: any) {
+      setError(err.message || `Secure SSO handshake with ${provider} failed.`);
+      setSsoLoading(null);
+    }
+  };
+
+  const handleDemoSsoLogin = async (provider: "google" | "microsoft") => {
+    setShowGoogleSetupModal(false);
+    setError("");
+    setSsoLoading(provider);
+
+    try {
       const mockEmail = provider === "google" 
         ? "google-auditor@nic.in" 
         : "microsoft-auditor@nic.in";
       const dummyPass = "SSO_SECURE_TOKEN_PASS_9918";
 
-      // Direct high-fidelity authentication with backend
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -203,13 +260,12 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
         throw new Error(data.error || `${provider} authentication failed.`);
       }
 
-      // Elegant simulated SSO gateway handshake delay for visual premium feedback
-      await new Promise((resolve) => setTimeout(resolve, 900));
-      
+      await new Promise((resolve) => setTimeout(resolve, 600));
       onLoginSuccess(data.user);
       navigate("/dashboard");
     } catch (err: any) {
-      setError(err.message || `Secure SSO handshake with ${provider} failed.`);
+      setError(err.message || `Demo SSO login failed.`);
+    } finally {
       setSsoLoading(null);
     }
   };
@@ -420,6 +476,108 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
             <span>CAG CENTRAL DECRYPTION MATRIX v4.11</span>
           </div>
         </div>
+
+        {/* GOOGLE AUTH SETUP ASSISTANCE MODAL */}
+        {showGoogleSetupModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+            <div className="bg-[#0c101d] border border-cyber-border rounded-2xl max-w-lg w-full p-6 sm:p-7 shadow-2xl relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-500 via-cyber-teal to-blue-500"></div>
+
+              <div className="flex items-start justify-between gap-4 mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/25 text-amber-400">
+                    <GoogleIcon />
+                  </div>
+                  <div>
+                    <h3 className="text-base sm:text-lg font-semibold text-white">Google OAuth Setup in Supabase</h3>
+                    <p className="text-xs text-slate-400 font-mono">SUPABASE PROJECT: chakavek (syvifopjbdxqdmxoxnyi)</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowGoogleSetupModal(false)}
+                  className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="space-y-3.5 text-xs text-slate-300">
+                <div className="p-3 bg-amber-950/20 border border-amber-500/20 rounded-xl flex items-start gap-2.5 text-amber-200/90">
+                  <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                  <span>
+                    Google OAuth provider is not yet turned ON in your Supabase project dashboard. You can complete the 2-minute setup below or test immediately with a verified demo auditor account.
+                  </span>
+                </div>
+
+                <div className="space-y-2">
+                  <span className="font-semibold text-white uppercase tracking-wider text-[11px] font-mono block">
+                    Step 1: Copy Supabase Redirect Callback URI
+                  </span>
+                  <div className="flex items-center gap-2 p-2 bg-[#05070e] border border-cyber-border rounded-lg">
+                    <code className="text-[11px] text-cyber-teal-light font-mono break-all flex-1 select-all">
+                      {googleSetupInfo?.supabaseCallbackUrl || "https://syvifopjbdxqdmxoxnyi.supabase.co/auth/v1/callback"}
+                    </code>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        navigator.clipboard.writeText(googleSetupInfo?.supabaseCallbackUrl || "https://syvifopjbdxqdmxoxnyi.supabase.co/auth/v1/callback");
+                        setCopiedCallback(true);
+                        setTimeout(() => setCopiedCallback(false), 2000);
+                      }}
+                      className="p-1.5 bg-cyber-teal/15 hover:bg-cyber-teal/30 text-cyber-teal-light rounded-md text-[10px] flex items-center gap-1 font-mono transition-colors shrink-0 cursor-pointer"
+                    >
+                      {copiedCallback ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                      <span>{copiedCallback ? "Copied" : "Copy"}</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <span className="font-semibold text-white uppercase tracking-wider text-[11px] font-mono block">
+                    Step 2: Enable Google in Supabase Auth Providers
+                  </span>
+                  <ol className="list-decimal pl-4 space-y-1 text-slate-400">
+                    <li>Create an OAuth Client ID in <a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noreferrer" className="text-cyber-teal-light underline hover:text-white inline-flex items-center gap-0.5">Google Cloud Console <ExternalLink className="w-3 h-3 inline" /></a> (Web Application).</li>
+                    <li>Add the Callback URI above under <strong>Authorized redirect URIs</strong>.</li>
+                    <li>Paste your <strong>Client ID</strong> &amp; <strong>Client Secret</strong> into Supabase and toggle "Enable Google provider".</li>
+                  </ol>
+                </div>
+              </div>
+
+              <div className="mt-6 pt-4 border-t border-cyber-border/40 flex flex-col sm:flex-row items-center gap-2.5">
+                <a
+                  href={googleSetupInfo?.dashboardUrl || "https://supabase.com/dashboard/project/syvifopjbdxqdmxoxnyi/auth/providers"}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="w-full sm:w-auto flex-1 py-2.5 px-3 bg-cyber-teal/15 hover:bg-cyber-teal/25 border border-cyber-teal/40 hover:border-cyber-teal text-cyber-teal-light hover:text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors"
+                >
+                  <span>Open Supabase Auth Providers</span>
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </a>
+
+                <button
+                  type="button"
+                  onClick={() => handleDemoSsoLogin("google")}
+                  className="w-full sm:w-auto flex-1 py-2.5 px-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 shadow-md transition-all cursor-pointer"
+                >
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>Instant Demo Google Login</span>
+                </button>
+              </div>
+
+              <div className="mt-3 text-center">
+                <button
+                  type="button"
+                  onClick={() => handleSsoLogin("google", true)}
+                  className="text-[11px] text-slate-400 hover:text-slate-200 underline transition-colors cursor-pointer"
+                >
+                  Already enabled it? Launch live Google OAuth popup
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </SilkBackground>
   );
