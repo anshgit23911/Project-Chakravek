@@ -28,8 +28,20 @@ if (groq_api_key && groq_api_key !== "YOUR_GROQ_API_KEY") {
 // ============================================================================
 import { createClient } from "@supabase/supabase-js";
 
-let supabaseUrl = process.env.SUPABASE_URL || "";
-let supabaseAnonKey = process.env.SUPABASE_ANON_KEY || "";
+const DEFAULT_SUPABASE_URL = "https://syvifopjbdxqdmxoxnyi.supabase.co";
+const DEFAULT_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN5dmlmb3BqYmR4cWRteG94bnlpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAzNTQzMTIsImV4cCI6MjEwNTkzMDMxMn0.2HuD7M0pDD8Dc_Uqgl_NQQK0h__HPTiDDc8yJGNxVhw";
+
+let rawUrl = (process.env.SUPABASE_URL || "").trim();
+let rawKey = (process.env.SUPABASE_ANON_KEY || "").trim();
+
+// Fallback to active project if unconfigured or pointing to the decommissioned project
+if (!rawUrl || rawUrl.includes("yisnwcndonlblbqwlvba") || rawUrl === "YOUR_SUPABASE_URL") {
+  rawUrl = DEFAULT_SUPABASE_URL;
+  rawKey = DEFAULT_SUPABASE_ANON_KEY;
+}
+
+let supabaseUrl = rawUrl;
+let supabaseAnonKey = rawKey;
 let supabase: any = null;
 
 function initializeSupabase(url: string, key: string) {
@@ -1942,9 +1954,9 @@ An exhaustive post-facto audit of contract **${contract.id}** issued to **${vend
   // DATABASE CONFIG & SQL PLAYGROUND (SUPABASE INTEGRATION)
   // ============================================================================
   let supabaseConfig = {
-    url: process.env.SUPABASE_URL || "",
-    anonKey: process.env.SUPABASE_ANON_KEY || "",
-    status: process.env.SUPABASE_URL ? "Connected" : "Simulated Local"
+    url: supabaseUrl,
+    anonKey: supabaseAnonKey,
+    status: supabaseUrl ? "Connected" : "Simulated Local"
   };
 
   app.get("/api/database/config", (req, res) => {
