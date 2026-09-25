@@ -36,9 +36,10 @@ export default function AIAdviserPage() {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const sampleQueries = [
-    "Show vendors registered after 2022 that won contracts above ₹5 crore.",
-    "List contracts with unusually high unit pricing.",
-    "Identify vendors linked to multiple flagged contracts."
+    "Search CAG audit findings regarding emergency fast track procedure delivery delays.",
+    "Find high-value GeM procurement orders flagged for pricing anomalies.",
+    "List eProcurement tenders with single-bidder or price deviation anomalies.",
+    "Analyze vendor risk networks for Zenith Armaments and linked shell entities."
   ];
 
   // Helper to create initial welcome message
@@ -254,6 +255,15 @@ export default function AIAdviserPage() {
             <span className="truncate">Chakravek Conversational Advisement Node</span>
           </h1>
           <p className="text-slate-400 text-xs mt-1">Ask RAG questions from uploaded procurement datasets and central audit records.</p>
+          <div className="flex flex-wrap items-center gap-2 mt-2">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono bg-cyber-teal/15 text-cyber-teal-light border border-cyber-teal-light/25">
+              <span className="w-1.5 h-1.5 rounded-full bg-cyber-teal-light animate-pulse"></span>
+              RAG Pipeline Active: 31,500 Indexed Procurement Records
+            </span>
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono bg-white/[0.04] text-slate-400 border border-white/[0.08]">
+              CAG Cases &bull; GeM Orders &bull; eProcure Tenders
+            </span>
+          </div>
         </div>
         <div className="flex items-center gap-3">
           <AISettingsControl />

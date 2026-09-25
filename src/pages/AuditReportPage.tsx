@@ -424,8 +424,8 @@ export default function AuditReportPage() {
                 onChange={(e) => setSelectedContractId(e.target.value)}
                 className="w-full bg-cyber-dark/85 border border-cyber-border rounded-lg text-xs text-slate-200 px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-cyber-teal"
               >
-                {contracts.map((c) => (
-                  <option key={c.id} value={c.id}>{c.id} - {c.title.substring(0, 32)}...</option>
+                {[...contracts].sort((a, b) => b.riskScore - a.riskScore).slice(0, 300).map((c) => (
+                  <option key={c.id} value={c.id}>{c.id} - {c.title.substring(0, 32)}... [Risk: {c.riskScore}]</option>
                 ))}
               </select>
             </div>
